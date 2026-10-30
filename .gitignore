@@ -1,0 +1,107 @@
+# ---------------------------------------------------------------------------
+# Python
+# ---------------------------------------------------------------------------
+__pycache__/
+*.py[cod]
+*$py.class
+*.pyo
+*.pyd
+.Python
+
+# ---------------------------------------------------------------------------
+# Virtual environments
+# ---------------------------------------------------------------------------
+.venv/
+venv/
+env/
+ENV/
+.env
+
+# ---------------------------------------------------------------------------
+# Environment / secrets
+# ---------------------------------------------------------------------------
+.env
+.env.*
+*.env
+secrets.json
+credentials.json
+
+# ---------------------------------------------------------------------------
+# Build / distribution
+# ---------------------------------------------------------------------------
+build/
+dist/
+*.egg-info/
+*.egg
+.eggs/
+MANIFEST
+
+# ---------------------------------------------------------------------------
+# Packaging / installer caches
+# ---------------------------------------------------------------------------
+pip-log.txt
+pip-delete-this-directory.txt
+.installed.cfg
+
+# ---------------------------------------------------------------------------
+# Test / coverage
+# ---------------------------------------------------------------------------
+.pytest_cache/
+.coverage
+.coverage.*
+htmlcov/
+coverage.xml
+*.cover
+.tox/
+.nox/
+
+# ---------------------------------------------------------------------------
+# Type-checking
+# ---------------------------------------------------------------------------
+.mypy_cache/
+.dmypy.json
+dmypy.json
+.pytype/
+
+# ---------------------------------------------------------------------------
+# Editors / IDEs
+# ---------------------------------------------------------------------------
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+Thumbs.db
+
+# ---------------------------------------------------------------------------
+# Jupyter / IPython
+# ---------------------------------------------------------------------------
+# The notebook used to develop this pipeline is kept out of the package tree.
+*.ipynb
+.ipynb_checkpoints/
+profile_default/
+ipython_config.py
+
+# ---------------------------------------------------------------------------
+# obliq-OCR specific
+# ---------------------------------------------------------------------------
+# Pipeline output directories (generated at runtime)
+outputs/
+my_results/
+results/
+
+# Test fixture PDFs (large binary assets – add via Git LFS or locally)
+tests/fixtures/*.pdf
+tests/fixtures/*.png
+tests/fixtures/*.jpg
+tests/fixtures/*.tiff
+
+# Model weight files that may be downloaded locally
+*.onnx
+models/
+weights/
+
+# Temporary / scratch files
+scratch/
+tmp/
