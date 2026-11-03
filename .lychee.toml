@@ -1,0 +1,14 @@
+# .lychee.toml
+accept = [200, 429]
+exclude = [
+    "http://localhost:*",
+    "127.0.0.1:*"
+]
+exclude_path = [
+    ".git/",
+    "venv/",
+    ".pytest_cache/",
+    ".mypy_cache/",
+    ".ruff_cache/"
+]
+verbose = true
