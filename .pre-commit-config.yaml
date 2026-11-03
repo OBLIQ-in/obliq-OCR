@@ -1,0 +1,31 @@
+repos:
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v4.6.0
+    hooks:
+      - id: trailing-whitespace         # Trim spaces at line ends
+      - id: end-of-file-fixer           # Ensure file ends with a newline
+      - id: check-yaml                  # Check YAML files
+      - id: check-toml                  # Check TOML files
+      - id: check-added-large-files     # Prevents committing large files greater than 5MB
+        args: ['--maxkb=5000']
+
+  - repo: https://github.com/astral-sh/ruff-pre-commit
+    rev: v0.6.9
+    hooks:
+      - id: ruff
+        args: [--fix]      # Automatically fix issues when possible
+      - id: ruff-format
+
+  # Static type checker for package source code
+  - repo: https://github.com/pre-commit/mirrors-mypy
+    rev: v1.11.2
+    hooks:
+      - id: mypy
+        additional_dependencies: [types-Pillow, types-PyYAML]
+        files: ^src/
+
+  # Security scanner for hardcoded secrets in source code
+  - repo: https://github.com/gitleaks/gitleaks
+    rev: v8.18.2
+    hooks:
+      - id: gitleaks

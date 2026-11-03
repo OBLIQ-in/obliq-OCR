@@ -1,5 +1,5 @@
 [build-system]
-requires = ["hatchling"]
+requires = ["hatchling", "hatch-vcs"]
 build-backend = "hatchling.build"
 
 # ---------------------------------------------------------------------------
@@ -7,11 +7,14 @@ build-backend = "hatchling.build"
 # ---------------------------------------------------------------------------
 [project]
 name = "obliq-ocr"
-version = "0.1.0"
 description = "Page-aware OCR and document-parsing pipeline combining PyMuPDF and RapidOCR."
 readme = "README.md"
 license = { text = "MIT" }
-authors = [{ name = "Rahul Kate", email = "rahulkate173@gmail.com" }]
+authors = [
+    { name = "Rahul Kate", email = "rahulkate173@gmail.com" },
+    { name = "Abhiraj Adhikary", email = "abhirajadhikary06@gmail.com" },
+    { name = "Naman Jha", email = "abhirajadhikary06@gmail.com" }
+    ]
 keywords = ["ocr", "pdf", "pymupdf", "rapidocr", "document-parsing"]
 classifiers = [
     "Development Status :: 3 - Alpha",
@@ -28,6 +31,9 @@ classifiers = [
 
 # Python version support: 3.10+
 requires-python = ">=3.10"
+
+# Dynamic version sourced from Git tags
+dynamic = ["version"]
 
 # ---------------------------------------------------------------------------
 # Runtime dependencies
@@ -67,7 +73,18 @@ dev = [
     "ruff>=0.4.0",
     "mypy>=1.10.0",
     "hatchling>=1.25.0",
+    "hatch-vcs>=0.4.0",
+    "pre-commit>=3.7.0",
 ]
+
+# ---------------------------------------------------------------------------
+# Versioning configuration (hacth-vcs)
+# ---------------------------------------------------------------------------
+[tool.hatch.version]
+source = "vcs"
+
+[tool.hatch.build.targets.wheel.hooks.vcs]
+version-file = "src/obliq_ocr/_version.py"
 
 # ---------------------------------------------------------------------------
 # Console scripts (CLI)

@@ -175,7 +175,28 @@ def extract_document(
         else:
             # ── standalone image input ────────────────────────────────────
             reason = "image file"
-
+        if pdf_page is not None:
+            use_text, reason = triage_page(pdf_page)
+            if use_text:
+                text, _ = text_layer_extract(pdf_page)
+                pr = PageResult(
+                    page=page_no,
+                    method="text_layer",
+                    reason=reason,
+                    text=text,
+                    n_chars=len(text),
+                    confidence=None,
+                    seconds=time.perf_counter() - t0,
+                )
+                res.pages.append(pr)
+                if verbose:
+                    print(f"page {page_no:>3}: text_layer  {pr.seconds * 1000:7.1f} ms  ({reason})")
+                continue
+            img = render_page(pdf_page)
+        else:
+            reason = "image file"
+        if img is None:
+            continue
         if is_blank_image(img):
             pr = PageResult(
                 page=page_no,

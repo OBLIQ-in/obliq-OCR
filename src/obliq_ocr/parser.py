@@ -16,7 +16,7 @@ from __future__ import annotations
 
 import re
 from pathlib import Path
-from typing import Iterator, List, Optional, Tuple
+from typing import Any, Iterator, List, Optional, Tuple
 
 import numpy as np
 
@@ -233,5 +233,6 @@ def iter_pages(
         doc = pymupdf.open(str(path))
         if doc.needs_pass:
             raise ValueError(f"{path.name!r} is password-protected.")
-        for i, page in enumerate(doc, start=1):
+        page: Any
+        for i, page in enumerate(doc, start=1):  # type: ignore[arg-type]
             yield i, page, None

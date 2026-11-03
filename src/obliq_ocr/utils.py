@@ -163,7 +163,7 @@ def fit_image(img: np.ndarray, max_side: int = MAX_SIDE_PX) -> np.ndarray:
     if m <= max_side:
         return img
     s = max_side / m
-    return np.array(Image.fromarray(img).resize((int(w * s), int(h * s)), Image.LANCZOS))
+    return np.array(Image.fromarray(img).resize((int(w * s), int(h * s)), Image.Resampling.LANCZOS))
 
 
 def is_blank_image(img: np.ndarray, std_threshold: float = 3.0) -> bool:

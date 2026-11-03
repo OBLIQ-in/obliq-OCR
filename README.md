@@ -105,13 +105,14 @@ for page in result.pages:
 
 # Save JSON + TXT to disk
 from obliq_ocr import save_result
+
 save_result(result, out_dir="outputs/")
 ```
 
 ### Force device
 
 ```python
-result = parse_document("scan.pdf", force_device="cpu")   # always CPU
+result = parse_document("scan.pdf", force_device="cpu")  # always CPU
 result = parse_document("scan.pdf", force_device="cuda")  # require GPU
 # or via environment variable:
 # OBLIQ_OCR_DEVICE=cuda python my_script.py
