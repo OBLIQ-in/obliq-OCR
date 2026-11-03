@@ -18,6 +18,11 @@ jobs:
       - name: Checkout Code
         uses: actions/checkout@v4
 
+      - name: Install System Dependencies (OpenCV / OpenGL)
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y libgl1 libglib2.0-0
+
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
@@ -48,6 +53,11 @@ jobs:
     steps:
       - name: Checkout Code
         uses: actions/checkout@v4
+
+      - name: Install System Dependencies (OpenCV / OpenGL)
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y libgl1 libglib2.0-0
 
       - name: Set up Python ${{ matrix.python-version }}
         uses: actions/setup-python@v5
