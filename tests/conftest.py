@@ -22,7 +22,9 @@ FIXTURES_DIR = Path(__file__).parent / "fixtures"
 # ---------------------------------------------------------------------------
 
 
-def _make_digital_pdf(text: str = "Hello obliq-OCR. This is a digital text-layer page for testing purposes.") -> bytes:
+def _make_digital_pdf(
+    text: str = "Hello obliq-OCR. This is a digital text-layer page for testing purposes.",
+) -> bytes:
     """Return bytes of a minimal single-page digital PDF with embedded text."""
     import pymupdf
 

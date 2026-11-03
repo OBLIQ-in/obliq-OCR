@@ -11,6 +11,16 @@ Quick start
 >>> print(result.full_text())
 """
 
+try:
+    from obliq_ocr._version import __version__
+except ImportError:
+    try:
+        from importlib.metadata import version
+
+        __version__ = version("obliq-ocr")
+    except Exception:
+        __version__ = "0.1.0.dev0"
+
 from obliq_ocr.core import DocResult, PageResult, save_result
 from obliq_ocr.core import extract_document as parse_document  # primary public API
 from obliq_ocr.engine import build_ocr, detect_device
@@ -31,5 +41,3 @@ __all__ = [
     "PageOutput",
     "BoundingBox",
 ]
-
-__version__ = "0.1.0"
