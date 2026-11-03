@@ -46,11 +46,13 @@ class TestImports:
         assert callable(detect_device)
 
     def test_version_string(self):
-        import obliq_ocr
+        from obliq_ocr import __version__
 
-        assert isinstance(obliq_ocr.__version__, str)
-        parts = obliq_ocr.__version__.split(".")
-        assert len(parts) == 3, "version should be semver (x.y.z)"
+        assert isinstance(__version__, str)
+        # Strip local hatch-vcs build metadata if present (e.g., '0.1.dev16+g...')
+        base_version = __version__.split(".dev")[0]
+        parts = base_version.split(".")
+        assert len(parts) >= 2, "version should have major and minor version components"
 
 
 # ---------------------------------------------------------------------------
