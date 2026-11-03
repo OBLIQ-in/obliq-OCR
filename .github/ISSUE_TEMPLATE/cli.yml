@@ -1,0 +1,19 @@
+name: CLI Feature or Issue
+description: Report bugs or request enhancements specifically related to the obliq-OCR command-line interface.
+title: "[CLI]: "
+labels: ["cli", "needs-triage"]
+body:
+  - type: textarea
+    id: cli-summary
+    attributes:
+      label: Summary
+      description: Describe the CLI feature request, argument change, or behavior bug.
+    validations:
+      required: true
+  - type: textarea
+    id: command-example
+    attributes:
+      label: Command Execution & Expected Output
+      description: Provide the exact `obliq-ocr ...` command invocation and expected terminal output.
+    validations:
+      required: true

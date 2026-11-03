@@ -1,0 +1,30 @@
+name: CI / Tooling Update
+description: Request or propose updates to GitHub Actions workflows, linting, packaging, or pre-commit hooks.
+title: "[CI]: "
+labels: ["type:ci", "needs-triage"]
+body:
+  - type: textarea
+    id: ci-description
+    attributes:
+      label: Overview
+      description: Describe the workflow change, quality gate, matrix update, or security scan to be added/modified.
+    validations:
+      required: true
+  - type: dropdown
+    id: ci-category
+    attributes:
+      label: Category
+      options:
+        - GitHub Actions Workflow
+        - Pre-commit Hooks / Ruff / Mypy
+        - Packaging (Hatch / Hatch-vcs / Build)
+        - Security & Dependency Scanning
+    validations:
+      required: true
+  - type: textarea
+    id: verification-plan
+    attributes:
+      label: Verification & Test Plan
+      description: How should this CI workflow change be tested and validated?
+    validations:
+      required: true

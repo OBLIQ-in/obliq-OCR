@@ -1,0 +1,26 @@
+name: Architecture & Refactoring
+description: Propose architectural changes, structural refactoring, or engine updates.
+title: "[Arch]: "
+labels: ["type:refactoring", "needs-triage"]
+body:
+  - type: textarea
+    id: arch-summary
+    attributes:
+      label: Problem / Context
+      description: Describe the current architectural limitation, technical debt, or bottleneck.
+    validations:
+      required: true
+  - type: textarea
+    id: proposed-architecture
+    attributes:
+      label: Proposed Architecture & Modules
+      description: Outline the structural changes (e.g., core engine decoupling, ONNX session pooling, PyMuPDF interface changes).
+    validations:
+      required: true
+  - type: textarea
+    id: breaking-changes
+    attributes:
+      label: Breaking Changes & Compatibility
+      description: List any potential breaking changes to public APIs or internal module contracts.
+    validations:
+      required: false

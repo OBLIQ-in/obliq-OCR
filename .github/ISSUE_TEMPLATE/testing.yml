@@ -1,0 +1,19 @@
+name: Testing & Test Fixtures
+description: Propose new test suites, synthetic PDF fixture enhancements, or coverage additions.
+title: "[Test]: "
+labels: ["type:test", "needs-triage"]
+body:
+  - type: textarea
+    id: test-gap
+    attributes:
+      label: Testing Scope / Gap
+      description: Identify missing test scenarios, uncovered modules, or edge-case PDF fixtures needing validation.
+    validations:
+      required: true
+  - type: textarea
+    id: implementation-details
+    attributes:
+      label: Test Implementation Details
+      description: Describe how synthetic PDF fixtures or unit/integration tests should be constructed under `tests/`.
+    validations:
+      required: false

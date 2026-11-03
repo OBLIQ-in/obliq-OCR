@@ -1,7 +1,7 @@
 name: Bug Report
 description: File a bug report to help us improve obliq-OCR.
 title: "[Bug]: "
-labels: ["type:bug", "needs-triage", "feat", "enhancement", "ci", "cli"]
+labels: ["type:bug"]
 body:
   - type: textarea
     attributes:
