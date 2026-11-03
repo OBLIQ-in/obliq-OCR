@@ -1,23 +1,29 @@
-area:ocr:
-  - any:
-      - "src/obliq_ocr/parser.py"
-      - "src/obliq_ocr/engine.py"
 
-area:pdf-parsing:
-  - any:
-      - "src/obliq_ocr/core.py"
-      - "src/obliq_ocr/utils.py"
+ocr:
+  - changed-files:
+      - any-glob-to-any-file:
+          - "src/obliq_ocr/parser.py"
+          - "src/obliq_ocr/engine.py"
+          - "src/obliq_ocr/cli.py"
 
-area:packaging:
-  - any:
-      - "pyproject.toml"
-      - "setup.py"
-      - ".github/workflows/**"
+pdf-parsing:
+  - changed-files:
+      - any-glob-to-any-file:
+          - "src/obliq_ocr/core.py"
+          - "src/obliq_ocr/utils.py"
 
-area:cli:
-  - any:
-      - "src/obliq_ocr/cli.py"
+packaging:
+  - changed-files:
+      - any-glob-to-any-file:
+          - "pyproject.toml"
+          - "setup.py"
 
-area:tests:
-  - any:
-      - "tests/*.py"
+github_actions:
+  - changed-files:
+      - any-glob-to-any-file:
+          - ".github/workflows/**"
+
+test:
+  - changed-files:
+      - any-glob-to-any-file:
+          - "tests/**/*.py"
