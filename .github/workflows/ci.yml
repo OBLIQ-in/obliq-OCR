@@ -74,4 +74,4 @@ jobs:
         run: python tests/scripts/generate_fixtures.py
 
       - name: Run Pytest Suite with Coverage
-        run: pytest --cov=obliq_ocr
+        run: python -m pytest --cov=obliq_ocr
