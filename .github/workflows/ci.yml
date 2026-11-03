@@ -18,6 +18,11 @@ jobs:
       - name: Checkout Code
         uses: actions/checkout@v4
 
+      - name: Install System Dependencies (OpenCV / OpenGL)
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y libgl1 libglib2.0-0
+
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
@@ -33,7 +38,40 @@ jobs:
         run: ruff check .
 
       - name: Run Ruff Formatter Check
-        run: ruff format --check .
+        run: ruff format --check --exclude src/obliq_ocr/_version.py .
 
       - name: Run Mypy Type Check
         run: mypy src/
+
+  test-matrix:
+    name: Test (Python ${{ matrix.python-version }})
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: ['3.10', '3.11', '3.12']
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Install System Dependencies (OpenCV / OpenGL)
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y libgl1 libglib2.0-0
+
+      - name: Set up Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+          cache: 'pip'
+
+      - name: Install Package & Test Dependencies
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install -e .[test,dev] pytest pytest-cov
+
+      - name: Generate Synthetic PDF Fixtures
+        run: python tests/scripts/generate_fixtures.py
+
+      - name: Run Pytest Suite with Coverage
+        run: python -m pytest --cov=obliq_ocr
