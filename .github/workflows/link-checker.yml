@@ -3,8 +3,18 @@ name: Documentation Link Checker
 on:
   push:
     branches: [ main ]
+    paths:
+      - '**/*.md'
+      - 'docs/**'
+      - '.lychee.toml'
+      - '.github/workflows/link-checker.yml'
   pull_request:
     branches: [ main ]
+    paths:
+      - '**/*.md'
+      - 'docs/**'
+      - '.lychee.toml'
+      - '.github/workflows/link-checker.yml'
   schedule:
     # Run weekly on Sundays at 00:00 UTC to catch dead external links
     - cron: '0 0 * * 0'
