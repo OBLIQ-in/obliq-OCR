@@ -89,6 +89,15 @@ jobs:
       - name: Run Pytest Suite with Coverage
         run: python -m pytest --cov=obliq_ocr
 
+      - name: Upload Coverage to Codecov
+        uses: codecov/codecov-action@v4
+        with:
+          file: ./coverage.xml
+          fail_ci_if_error: false
+          slug: OBLIQ-in/obliq-OCR
+        env:
+          CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
+
   build-package:
     name: Build & Validate Package
     needs: lint-and-typecheck
@@ -115,3 +124,12 @@ jobs:
 
       - name: Check Package Metadata Rendering
         run: twine check dist/*
+
+      - name: Install Wheel in Isolated Venv & Run Smoke Test
+        run: |
+          python -m venv .smoke_venv
+          source .smoke_venv/bin/activate
+          pip install --upgrade pip
+          pip install dist/*.whl
+          python -c "import obliq_ocr; print('Package imported successfully, version:', obliq_ocr.__version__)"
+          obliq-ocr --help
