@@ -66,6 +66,11 @@ gpu = [
     # You must uninstall onnxruntime (CPU) first if it is already installed.
     "onnxruntime-gpu>=1.17.0,<2.0.0",
 ]
+test = [
+    "pytest>7.0",
+    "pytest-cov>=4.0",
+    "jiwer>=3.0.0",
+]
 
 dev = [
     "pytest>=8.0.0",
@@ -103,7 +108,12 @@ packages = ["src/obliq_ocr"]
 # ---------------------------------------------------------------------------
 [tool.pytest.ini_options]
 testpaths = ["tests"]
-addopts = "-v --tb=short"
+addopts = [
+    "--cov=obliq_ocr",
+    "--cov-report=term-missing",
+    "--cov-report=xml",
+    "--cov-fail-under=80",
+]
 
 # ---------------------------------------------------------------------------
 # Ruff linting
@@ -114,6 +124,17 @@ target-version = "py310"
 
 [tool.ruff.lint]
 select = ["E", "F", "W", "I"]
+
+# ---------------------------------------------------------------------------
+# CLI coverage
+# ---------------------------------------------------------------------------
+
+[tool.coverage.run]
+source = ["src/obliq_ocr"]
+omit = [
+    "src/obliq_ocr/__main__.py",
+    "src/obliq_ocr/cli.py",
+]
 
 # ---------------------------------------------------------------------------
 # Mypy type-checking
