@@ -3,8 +3,18 @@ name: Secret Scanning (Gitleaks)
 on:
   push:
     branches: [ main ]
+    paths-ignore:
+      - '**/*.md'
+      - 'docs/**'
+      - '.gitignore'
+      - '.lychee.toml'
   pull_request:
     branches: [ main ]
+    paths-ignore:
+      - '**/*.md'
+      - 'docs/**'
+      - '.gitignore'
+      - '.lychee.toml'
   schedule:
     - cron: '0 0 * * 1'
   workflow_dispatch:

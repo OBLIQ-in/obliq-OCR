@@ -1,10 +1,22 @@
 name: CI Quality Gates
 
 on:
-  pull_request:
-    branches: [ main ]
   push:
     branches: [ main ]
+    paths:
+      - 'src/**'
+      - 'tests/**'
+      - 'pyproject.toml'
+      - 'Makefile'
+      - '.github/workflows/ci.yml'
+  pull_request:
+    branches: [ main ]
+    paths:
+      - 'src/**'
+      - 'tests/**'
+      - 'pyproject.toml'
+      - 'Makefile'
+      - '.github/workflows/ci.yml'
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
@@ -45,6 +57,7 @@ jobs:
 
   test-matrix:
     name: Test (Python ${{ matrix.python-version }})
+    needs: lint-and-typecheck
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
@@ -78,6 +91,7 @@ jobs:
 
   build-package:
     name: Build & Validate Package
+    needs: lint-and-typecheck
     runs-on: ubuntu-latest
     steps:
       - name: Checkout Code
