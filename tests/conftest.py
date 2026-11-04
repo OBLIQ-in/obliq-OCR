@@ -14,7 +14,20 @@ from pathlib import Path
 
 import pytest
 
-FIXTURES_DIR = Path(__file__).parent / "fixtures"
+from tests.scripts.generate_fixtures import FIXTURES_DIR, generate_all_fixtures
+
+# ---------------------------------------------------------------------------
+# Session Hook: Auto-generate synthetic PDF fixtures if missing
+# ---------------------------------------------------------------------------
+
+
+@pytest.fixture(scope="session", autouse=True)
+def ensure_fixtures_exist() -> None:
+    """Ensure all required PDF fixtures exist before running the test suite."""
+    required = ["digital.pdf", "scanned.pdf", "mixed.pdf", "rotated.pdf"]
+    missing = [f for f in required if not (FIXTURES_DIR / f).exists()]
+    if missing:
+        generate_all_fixtures()
 
 
 # ---------------------------------------------------------------------------
