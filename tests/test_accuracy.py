@@ -34,9 +34,9 @@ def test_golden_file_accuracy(filename: str, expected: str):
     computed_cer = cer(expected, extracted)
     computed_wer = wer(expected, extracted)
 
-    assert (
-        computed_cer <= MAX_CER
-    ), f"CER {computed_cer:.4f} exceeded threshold {MAX_CER} for {filename}"
-    assert (
-        computed_wer <= MAX_WER
-    ), f"WER {computed_wer:.4f} exceeded threshold {MAX_WER} for {filename}"
+    assert computed_cer <= MAX_CER, (
+        f"CER {computed_cer:.4f} exceeded threshold {MAX_CER} for {filename}"
+    )
+    assert computed_wer <= MAX_WER, (
+        f"WER {computed_wer:.4f} exceeded threshold {MAX_WER} for {filename}"
+    )
