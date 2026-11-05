@@ -190,6 +190,9 @@ Page numbering is **1-indexed**.
 
 ## Model details
 
+Exact model versions, measured accuracy and known limitations are in the
+[model card](MODEL_CARD.md).
+
 | Sub-model | File | Size | Source | License |
 |---|---|---|---|---|
 | PP-OCRv4 Detection | `ch_PP-OCRv4_det_infer.onnx` | ~4 MB | [RapidOCR releases](https://github.com/RapidAI/RapidOCR/releases) | Apache 2.0 |
