@@ -1,0 +1,70 @@
+site_name: obliq-ocr
+site_description: Page-aware OCR and document parsing for tax documents
+site_url: https://obliq-in.github.io/obliq-OCR/
+repo_url: https://github.com/OBLIQ-in/obliq-OCR
+repo_name: OBLIQ-in/obliq-OCR
+edit_uri: edit/main/docs/
+
+theme:
+  name: material
+  features:
+    - navigation.sections
+    - content.code.copy
+  palette:
+    - media: "(prefers-color-scheme: light)"
+      scheme: default
+      toggle:
+        icon: material/weather-night
+        name: Dark mode
+    - media: "(prefers-color-scheme: dark)"
+      scheme: slate
+      toggle:
+        icon: material/weather-sunny
+        name: Light mode
+
+nav:
+  - Home: index.md
+  - Architecture and output schema: architecture.md
+  - API reference: api.md
+  - Maintainers:
+      - Release guide: RELEASE_GUIDE.md
+      - Versioning policy: VERSIONING_POLICY.md
+      - Hotfix process: HOTFIX_PROCESS.md
+      - Yank and rollback: YANK_AND_ROLLBACK.md
+
+# docs/README.md is the folder index for people browsing GitHub; the site
+# uses index.md instead.
+exclude_docs: |
+  README.md
+
+markdown_extensions:
+  - admonition
+  - tables
+  - toc:
+      permalink: true
+  - pymdownx.highlight
+  - pymdownx.snippets:
+      base_path: ["."]
+      check_paths: true
+  - pymdownx.superfences:
+      custom_fences:
+        - name: mermaid
+          class: mermaid
+          format: !!python/name:pymdownx.superfences.fence_code_format
+
+hooks:
+  - mkdocs_hooks.py
+
+plugins:
+  - search
+  - mkdocstrings:
+      handlers:
+        python:
+          paths: [src]
+          options:
+            docstring_style: numpy
+            show_source: false
+            show_root_heading: true
+            show_root_full_path: false
+            members_order: source
+            heading_level: 3
