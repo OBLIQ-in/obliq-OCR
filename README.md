@@ -1,146 +1,66 @@
-# obliq-OCR
+# obliq-ocr
 
-> **High-performance, page-aware OCR and document-parsing pipeline** combining
-> [PyMuPDF](https://pymupdf.readthedocs.io) and
-> [RapidOCR](https://rapidai.github.io/RapidOCRDocs/) (PP-OCR / ONNX Runtime),
-> built for automated tax-compliance document processing at OBLIQ.
+[![CI](https://github.com/OBLIQ-in/obliq-OCR/actions/workflows/ci.yml/badge.svg)](https://github.com/OBLIQ-in/obliq-OCR/actions/workflows/ci.yml)
+[![PyPI](https://img.shields.io/pypi/v/obliq-ocr)](https://pypi.org/project/obliq-ocr/)
+[![Python 3.10 | 3.11 | 3.12](https://img.shields.io/badge/python-3.10%20%7C%203.11%20%7C%203.12-blue)](https://github.com/OBLIQ-in/obliq-OCR/actions/workflows/ci.yml)
+[![License: MIT](https://img.shields.io/badge/license-MIT-green)](https://github.com/OBLIQ-in/obliq-OCR/blob/main/pyproject.toml)
 
----
+Pulls the text out of PDFs and scans, one page at a time. Pages that already
+have digital text are read straight from the PDF in milliseconds; scanned
+pages go through OCR ([RapidOCR](https://github.com/RapidAI/RapidOCR), PP-OCRv4
+on ONNX Runtime). A file that mixes both is handled without any settings.
 
-## Table of Contents
+It was built at [OBLIQ](https://github.com/OBLIQ-in) for the documents CA
+firms get from their clients: tax invoices, bills, challans, e-way bills and
+compiled PDFs. It's for Python developers who need that text as plain strings
+or JSON, and its output is meant to be checked by a person before it's used.
 
-1. [How it works](#how-it-works)
-2. [Requirements](#requirements)
-3. [Installation](#installation)
-4. [Quick start](#quick-start)
-5. [CLI usage](#cli-usage)
-6. [Output schema](#output-schema)
-7. [Model details](#model-details)
-8. [Testing](#testing)
-9. [Known limitations](#known-limitations)
-10. [Project structure](#project-structure)
-
----
-
-## How it works
-
-The pipeline processes documents **page by page**:
-
-| Step | Action |
-|------|--------|
-| **Triage** | Is there a usable text layer? Is it garbled? Is the page a full-page image? Is it blank? |
-| **Digital page** | Extract text directly from the PDF text layer via PyMuPDF (~milliseconds). |
-| **Scanned page** | Rasterise the page at 200 DPI and run PP-OCR models via RapidOCR on ONNX Runtime. |
-| **Layout rebuild** | Word-level boxes are regrouped into visual reading-order lines; wide gaps become ` \| ` so table rows remain intact. |
-| **Output** | Per-page text + method + confidence + timing, returned as a `DocResult` and optionally saved as JSON + TXT. |
-
-Mixed files (some pages digital, some scanned) are handled naturally because the decision is made on a per-page basis.
-
----
-
-## Requirements
-
-| Dependency | Minimum version | Notes |
-|---|---|---|
-| Python | 3.10 | Tested on 3.10 – 3.13 |
-| PyMuPDF | 1.24.0 | PDF rendering and text extraction |
-| rapidocr-onnxruntime | 1.3.18 | OCR engine with bundled PP-OCR ONNX models |
-| onnxruntime | 1.17.0 | CPU inference runtime |
-| Pillow | 10.0.0 | Image preprocessing |
-| NumPy | 1.24.0 | Array operations |
-
-For GPU (CUDA) inference, install the `[gpu]` extra (see below).
-
----
-
-## Installation
-
-### From source (development)
+## Install
 
 ```bash
-# 1. Clone the repository and switch to the feature branch
-git clone https://github.com/rahulkate173/obliq-OCR.git
-cd obliq-OCR
-git switch feat/initial-ocr-pipeline
-
-# 2. Create and activate a virtual environment
-python -m venv .venv
-# Windows
-.venv\Scripts\activate
-# macOS / Linux
-source .venv/bin/activate
-
-# 3. Install the package in editable mode with dev dependencies
-pip install -e ".[dev]"
+pip install obliq-ocr
 ```
 
-### GPU (CUDA) support
+- **Python 3.10, 3.11 or 3.12.** The OCR engine doesn't install on 3.13 yet.
+- **Linux and Windows** are tested. macOS should work but isn't tested.
+- Runs on CPU. For an NVIDIA GPU, see [GPU](#gpu).
 
-If you have an NVIDIA GPU with CUDA:
+The first release isn't on PyPI yet. Until it is, install from GitHub:
 
 ```bash
-# Uninstall the CPU onnxruntime first (the two builds conflict)
-pip uninstall onnxruntime -y
-pip install "obliq-ocr[gpu]"
+pip install "git+https://github.com/OBLIQ-in/obliq-OCR.git"
 ```
 
-Set `OBLIQ_OCR_DEVICE=cuda` or pass `force_device="cuda"` to use it.
+## Quickstart
 
----
-
-## Quick start
-
+<!-- quickstart: tests/test_readme.py runs this block exactly as written -->
 ```python
-from obliq_ocr import parse_document
+from obliq_ocr import parse_document, save_result
 
-# Works with PDFs (digital, scanned, or mixed) and images (JPEG, PNG, TIFF, …)
-result = parse_document("invoice.pdf")
+result = parse_document("invoice.pdf")  # a PDF or an image
 
-# Print all pages
-print(result.full_text())
-
-# Access structured per-page data
 for page in result.pages:
-    print(f"Page {page.page}: method={page.method}, chars={page.n_chars}, conf={page.confidence}")
+    print(page.page, page.method, page.confidence)
 
-# Save JSON + TXT to disk
-from obliq_ocr import save_result
-
-save_result(result, out_dir="outputs/")
+print(result.full_text())
+save_result(result, out_dir="outputs")  # outputs/invoice.json and outputs/invoice.txt
 ```
 
-### Force device
+`parse_document` prints one progress line per page; pass `verbose=False` to
+turn that off.
 
-```python
-result = parse_document("scan.pdf", force_device="cpu")  # always CPU
-result = parse_document("scan.pdf", force_device="cuda")  # require GPU
-# or via environment variable:
-# OBLIQ_OCR_DEVICE=cuda python my_script.py
-```
+## Supported files
 
----
+| Type | Extensions | Notes |
+|---|---|---|
+| PDF | `.pdf` | Digital, scanned or mixed. Password-protected PDFs raise `ValueError`. |
+| Images | `.jpg` `.jpeg` `.png` `.bmp` `.tif` `.tiff` `.webp` | Each frame of a multi-page TIFF is a page. Phone photos are turned upright using their EXIF data. |
 
-## CLI usage
+## Sample output
 
-```bash
-# Basic usage
-obliq-ocr invoice.pdf
-
-# Specify output directory and device
-obliq-ocr scan.pdf --output-dir results/ --device cpu
-
-# Suppress per-page progress
-obliq-ocr document.pdf --quiet
-
-# Or invoke as a module
-python -m obliq_ocr invoice.pdf
-```
-
----
-
-## Output schema
-
-`parse_document()` returns a `DocResult`. Calling `.to_dict()` gives:
+`save_result` writes this JSON (the same as `result.to_dict()`). This is the
+real output for a two-page test PDF where page 1 is digital and page 2 is a
+scan:
 
 ```json
 {
@@ -149,146 +69,97 @@ python -m obliq_ocr invoice.pdf
   "pages": [
     {
       "page": 1,
-      "method": "ocr",
-      "reason": "only 3 text chars",
-      "text": "Invoice Number: 12345 | Amount: ₹50,000",
-      "n_chars": 38,
-      "confidence": 0.87,
-      "seconds": 2.65
+      "method": "text_layer",
+      "reason": "97 chars, image cover 0%",
+      "text": "Mixed document digital page.\nThis page contains native text layer elements.\nIt should be extracted via text layer.",
+      "n_chars": 114,
+      "confidence": null,
+      "seconds": 0.018
     },
     {
       "page": 2,
-      "method": "text_layer",
-      "reason": "412 chars, image cover 0%",
-      "text": "Terms and conditions ...",
-      "n_chars": 412,
-      "confidence": null,
-      "seconds": 0.003
+      "method": "ocr",
+      "reason": "only 0 text chars",
+      "text": "Mixed document scanned page.",
+      "n_chars": 28,
+      "confidence": 1.0,
+      "seconds": 0.516
     }
   ]
 }
 ```
 
-### Field reference
+`method` is `text_layer`, `ocr` or `blank`. `confidence` is the average OCR
+score from 0 to 1, and `null` for pages that weren't OCR'd. Every field and
+error is explained in the
+[architecture doc](https://github.com/OBLIQ-in/obliq-OCR/blob/main/docs/architecture.md).
 
-| Field | Type | Description |
-|---|---|---|
-| `page` | int | 1-indexed page number |
-| `method` | str | `"text_layer"`, `"ocr"`, or `"blank"` |
-| `reason` | str | Why that method was chosen |
-| `text` | str | Extracted text; column gaps → ` \| ` |
-| `n_chars` | int | Character count of `text` |
-| `confidence` | float \| null | Mean PP-OCR score [0, 1]; `null` for text-layer pages |
-| `seconds` | float | Wall-clock processing time for this page |
-
-**Coordinate system (elements):** Bounding boxes are `[x0, y0, x1, y1]`.
-For digital pages, units are PDF *points* (1/72 inch), origin at the top-left corner.
-For scanned pages, units are *pixels* at the configured render DPI (default 200).
-Page numbering is **1-indexed**.
-
----
-
-## Model details
-
-| Sub-model | File | Size | Source | License |
-|---|---|---|---|---|
-| PP-OCRv4 Detection | `ch_PP-OCRv4_det_infer.onnx` | ~4 MB | [RapidOCR releases](https://github.com/RapidAI/RapidOCR/releases) | Apache 2.0 |
-| PP-OCRv4 Classification | `ch_ppocr_mobile_v2.0_cls_infer.onnx` | ~1 MB | [RapidOCR releases](https://github.com/RapidAI/RapidOCR/releases) | Apache 2.0 |
-| PP-OCRv4 Recognition | `ch_PP-OCRv4_rec_infer.onnx` | ~12 MB | [RapidOCR releases](https://github.com/RapidAI/RapidOCR/releases) | Apache 2.0 |
-
-**All three models are bundled inside the `rapidocr_onnxruntime` package**
-and are downloaded automatically by `pip install rapidocr_onnxruntime`.
-No manual model download is required. Total additional disk size: ~17 MB.
-No model files > 50 MB are committed to this repository.
-
----
-
-## Testing
+## Command line
 
 ```bash
-# Run all tests (some fixture-based tests are skipped on a clean clone)
+obliq-ocr invoice.pdf                                   # writes outputs/invoice.json and .txt
+obliq-ocr scan.pdf --output-dir results --device cpu    # choose folder and device
+obliq-ocr scan.pdf --quiet                              # no per-page progress
+python -m obliq_ocr invoice.pdf                         # same thing, as a module
+```
+
+## GPU
+
+```bash
+pip uninstall -y onnxruntime
+pip install "obliq-ocr[gpu]"
+```
+
+The CPU and GPU builds of ONNX Runtime can't be installed together, which is
+why the first command is needed. obliq-ocr uses CUDA when it's available; set
+`OBLIQ_OCR_DEVICE=cpu` or `cuda`, or pass `force_device="cpu"` or `"cuda"`, to
+choose.
+
+## Limitations
+
+The [model card](https://github.com/OBLIQ-in/obliq-OCR/blob/main/MODEL_CARD.md)
+has the measurements. In short:
+
+- Scanned pages can't produce `₹` or Hindi and other Indian scripts. Digital
+  PDFs keep them.
+- Handwriting isn't supported.
+- Low-resolution or skewed scans can change digits and drop whole lines.
+- A high `confidence` doesn't mean the text is right: check key values.
+- The output has no coordinates yet ([#71](https://github.com/OBLIQ-in/obliq-OCR/issues/71)).
+
+## Documentation
+
+- [Architecture and output schema](https://github.com/OBLIQ-in/obliq-OCR/blob/main/docs/architecture.md): how pages are routed, every output field, errors
+- [Model card](https://github.com/OBLIQ-in/obliq-OCR/blob/main/MODEL_CARD.md): models, versions, measured accuracy, limitations
+- [Benchmark](https://github.com/OBLIQ-in/obliq-OCR/blob/main/BENCHMARK.md): speed and memory against other OCR engines
+- [Changelog](https://github.com/OBLIQ-in/obliq-OCR/blob/main/CHANGELOG.md)
+- [Release guide](https://github.com/OBLIQ-in/obliq-OCR/blob/main/docs/RELEASE_GUIDE.md), for maintainers
+- [Security policy](https://github.com/OBLIQ-in/obliq-OCR/blob/main/SECURITY.md): how to report a vulnerability privately
+
+## Contributing
+
+```bash
+git clone https://github.com/OBLIQ-in/obliq-OCR.git
+cd obliq-OCR
+python -m venv .venv            # Python 3.10 to 3.12
+source .venv/bin/activate       # Windows: .venv\Scripts\activate
+pip install -e ".[dev,test]"
+pre-commit install
+python tests/scripts/generate_fixtures.py   # synthetic test PDFs
 pytest
-
-# Run with coverage report
-pytest --cov=obliq_ocr --cov-report=term-missing
-
-# Run only the fast smoke + unit tests
-pytest tests/test_pipeline.py -k "Imports or Unit or Blank or Digital"
 ```
 
-### Adding real fixture PDFs
+- Branch off `main` and open a PR. PR titles follow
+  [Conventional Commits](https://www.conventionalcommits.org) (`docs: …`,
+  `fix: …`, `feat: …`). If the PR has a single commit, its message must follow
+  the same format.
+- CI runs ruff, mypy, the tests on Python 3.10 to 3.12, an accuracy gate and a
+  link check.
+- Never commit real client documents or anything with personal data. Test
+  files must be synthetic or fully anonymised.
 
-Place anonymised or synthetic PDF files in `tests/fixtures/`:
-
-| File | What it tests |
-|---|---|
-| `digital.pdf` | Text extraction from native PDF text layer |
-| `scanned.pdf` | OCR on rasterised page images |
-| `mixed.pdf` | Handling of pages with both methods |
-| `rotated.pdf` | Text extraction on rotated pages |
-
-See `tests/fixtures/README.md` for rules. **No real client documents or PII.**
-
-### Test results (Kaggle CPU, Oct 2026)
-
-Tested on an 8-page scanned invoice PDF (Mix of LR No., E-Way Bill, Tax Invoice, Delivery Challan):
-
-| Metric | Value |
-|---|---|
-| Pages | 8 |
-| OCR pages | 8 |
-| Total time | 29 s (CPU) |
-| Mean confidence | 0.83 |
-| Hardware | Kaggle CPU notebook (2 vCPU, no GPU) |
-
-No formal CER/WER benchmark has been run yet. Visual inspection of output showed high accuracy on printed documents; handwriting and low-DPI scans are not supported.
-
----
-
-## Known limitations
-
-- **Handwriting** is not supported. PP-OCR is trained on printed text.
-- **Low-DPI scans** (< 100 DPI) may produce poor results. Increase `OCR_DPI` in `parser.py` if needed.
-- **Rotated pages** – PyMuPDF handles page rotation metadata automatically, but extreme skew (not multiples of 90°) will reduce OCR accuracy.
-- **Complex layouts** (multi-column magazines, tables with merged cells) are approximated by the ` | ` column separator.
-- **Right-to-left scripts** (Arabic, Hebrew) are not explicitly handled.
-- **Password-protected PDFs** raise a `ValueError`.
-- **GPU support** requires manually swapping `onnxruntime` for `onnxruntime-gpu`.
-
----
-
-## Project structure
-
-```
-obliq-OCR/
-├── .gitignore
-├── README.md
-├── pyproject.toml
-├── src/
-│   └── obliq_ocr/
-│       ├── __init__.py      # Public API + version
-│       ├── __main__.py      # python -m obliq_ocr
-│       ├── cli.py           # obliq-ocr console script
-│       ├── core.py          # Main pipeline (DocResult, extract_document, save_result)
-│       ├── engine.py        # OCR engine init & device detection
-│       ├── parser.py        # Per-page triage, text extraction, OCR
-│       ├── schemas.py       # Typed output schema (DocumentOutput, PageOutput, …)
-│       └── utils.py         # words_to_lines, garbage_ratio, image helpers
-├── tests/
-│   ├── __init__.py
-│   ├── conftest.py          # Shared fixtures (synthetic + file-based)
-│   ├── test_pipeline.py     # All tests
-│   └── fixtures/            # Anonymised / synthetic PDFs (not committed)
-│       ├── README.md
-│       ├── digital.pdf      # ← add before full test run
-│       ├── scanned.pdf      # ← add before full test run
-│       ├── mixed.pdf        # ← add before full test run
-│       └── rotated.pdf      # ← add before full test run
-└── docs/                    # (planned) benchmarks and additional docs
-```
-
----
+Questions and bugs go to [GitHub issues](https://github.com/OBLIQ-in/obliq-OCR/issues).
 
 ## License
 
-MIT © 2026 Rahul Kate / OBLIQ
+MIT
