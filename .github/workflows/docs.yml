@@ -1,0 +1,84 @@
+name: Docs Site
+
+# Builds the docs site on every PR (strict: a broken link or bad reference
+# fails the build) and deploys it to GitHub Pages when a release is published.
+# Run it by hand on main for the first deploy.
+
+on:
+  pull_request:
+    branches: [ main ]
+    paths:
+      - 'docs/**'
+      - 'src/**'
+      - 'README.md'
+      - 'mkdocs.yml'
+      - 'mkdocs_hooks.py'
+      - 'pyproject.toml'
+      - '.github/workflows/docs.yml'
+  push:
+    branches: [ main ]
+    paths:
+      - 'docs/**'
+      - 'src/**'
+      - 'README.md'
+      - 'mkdocs.yml'
+      - 'mkdocs_hooks.py'
+      - 'pyproject.toml'
+      - '.github/workflows/docs.yml'
+  release:
+    types: [ published ]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build:
+    name: Build Docs (strict)
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      # The docs tools need Python 3.11+, even though the package supports 3.10.
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+          cache: 'pip'
+
+      - name: Install Docs Tools
+        run: |
+          python -m pip install --upgrade pip
+          pip install --group docs
+
+      - name: Build Site
+        run: mkdocs build --strict
+        env:
+          NO_MKDOCS_2_WARNING: '1'
+
+      - name: Upload Site for Pages
+        if: github.event_name == 'release' || github.event_name == 'workflow_dispatch'
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: site
+
+  deploy:
+    name: Deploy to GitHub Pages
+    needs: build
+    if: github.event_name == 'release' || (github.event_name == 'workflow_dispatch' && github.ref == 'refs/heads/main')
+    runs-on: ubuntu-latest
+    permissions:
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Deploy
+        id: deployment
+        uses: actions/deploy-pages@v4

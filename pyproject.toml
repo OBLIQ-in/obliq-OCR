@@ -82,6 +82,25 @@ dev = [
     "pre-commit>=3.7.0",
 ]
 
+# Docs site tools only (mkdocs reads src/ without importing it), so CI can
+# build the docs without the OCR packages: pip install --group docs
+# Needs Python 3.11+; older mkdocstrings releases break with current
+# pymdown-extensions.
+[dependency-groups]
+docs = [
+    "mkdocs>=1.6,<2",
+    "mkdocs-material>=9.7",
+    "mkdocstrings>=1.0.7",
+    "mkdocstrings-python>=2.0.10",
+]
+
+[project.urls]
+Homepage = "https://github.com/OBLIQ-in/obliq-OCR"
+Documentation = "https://obliq-in.github.io/obliq-OCR/"
+Repository = "https://github.com/OBLIQ-in/obliq-OCR"
+Issues = "https://github.com/OBLIQ-in/obliq-OCR/issues"
+Changelog = "https://github.com/OBLIQ-in/obliq-OCR/blob/main/CHANGELOG.md"
+
 # ---------------------------------------------------------------------------
 # Versioning configuration (hacth-vcs)
 # ---------------------------------------------------------------------------

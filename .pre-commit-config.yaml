@@ -5,6 +5,7 @@ repos:
       - id: trailing-whitespace         # Trim spaces at line ends
       - id: end-of-file-fixer           # Ensure file ends with a newline
       - id: check-yaml                  # Check YAML files
+        args: [--unsafe]                # syntax only: mkdocs.yml uses a !!python/name tag
       - id: check-toml                  # Check TOML files
       - id: check-added-large-files     # Prevents committing large files greater than 5MB
         args: ['--maxkb=5000']

@@ -107,3 +107,6 @@ weights/
 # Temporary / scratch files
 scratch/
 tmp/
+
+# mkdocs build output
+site/
