@@ -168,7 +168,7 @@ The pipeline does compute a bounding box for every word (text layer) and every
 OCR box, but `parse_document()` currently drops them, so the output above has
 no coordinates. `schemas.py` defines richer types (`DocumentOutput`,
 `PageOutput`, `TextElement` with `bbox`) that are exported from the package,
-but nothing returns them yet.
+but nothing returns them yet. #71 tracks adding them.
 
 When boxes are added, they will use `[x0, y0, x1, y1]` with the origin at the
 top-left: PDF points (1/72 inch) for text-layer pages, and pixels of the
