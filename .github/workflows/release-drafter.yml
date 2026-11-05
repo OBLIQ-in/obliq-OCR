@@ -26,6 +26,9 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
+        with:
+          # Explicitly check out main so we aren't in a detached HEAD state
+          ref: main
 
       - name: Append Release Notes to Changelog
         run: |
@@ -56,5 +59,8 @@ jobs:
       - name: Commit and Push Changelog
         uses: stefanzweifel/git-auto-commit-action@v5
         with:
-          commit_message: "docs(changelog): update CHANGELOG.md for v${{ github.event.release.tag_name }}"
+          # Fixed double 'v' bug: tag_name already includes the 'v'
+          commit_message: "docs(changelog): update CHANGELOG.md for ${{ github.event.release.tag_name }}"
           file_pattern: "CHANGELOG.md"
+          # Explicitly tell git-auto-commit which branch to push to
+          branch: main
