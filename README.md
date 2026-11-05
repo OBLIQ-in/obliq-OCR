@@ -93,6 +93,42 @@ scan:
 score from 0 to 1, and `null` for pages that weren't OCR'd. Every field and
 error is explained in the
 [architecture doc](https://github.com/OBLIQ-in/obliq-OCR/blob/main/docs/architecture.md).
+### Field reference
+
+| Field | Type | Description |
+|---|---|---|
+| `page` | int | 1-indexed page number |
+| `method` | str | `"text_layer"`, `"ocr"`, or `"blank"` |
+| `reason` | str | Why that method was chosen |
+| `text` | str | Extracted text; column gaps → ` \| ` |
+| `n_chars` | int | Character count of `text` |
+| `confidence` | float \| null | Mean PP-OCR score [0, 1]; `null` for text-layer pages |
+| `seconds` | float | Wall-clock processing time for this page |
+
+**Coordinate system (elements):** Bounding boxes are `[x0, y0, x1, y1]`.
+For digital pages, units are PDF *points* (1/72 inch), origin at the top-left corner.
+For scanned pages, units are *pixels* at the configured render DPI (default 200).
+Page numbering is **1-indexed**.
+
+---
+
+## Model details
+
+Exact model versions, measured accuracy and known limitations are in the
+[model card](MODEL_CARD.md).
+
+| Sub-model | File | Size | Source | License |
+|---|---|---|---|---|
+| PP-OCRv4 Detection | `ch_PP-OCRv4_det_infer.onnx` | ~4 MB | [RapidOCR releases](https://github.com/RapidAI/RapidOCR/releases) | Apache 2.0 |
+| PP-OCRv4 Classification | `ch_ppocr_mobile_v2.0_cls_infer.onnx` | ~1 MB | [RapidOCR releases](https://github.com/RapidAI/RapidOCR/releases) | Apache 2.0 |
+| PP-OCRv4 Recognition | `ch_PP-OCRv4_rec_infer.onnx` | ~12 MB | [RapidOCR releases](https://github.com/RapidAI/RapidOCR/releases) | Apache 2.0 |
+
+**All three models are bundled inside the `rapidocr_onnxruntime` package**
+and are downloaded automatically by `pip install rapidocr_onnxruntime`.
+No manual model download is required. Total additional disk size: ~17 MB.
+No model files > 50 MB are committed to this repository.
+
+---
 
 ## Command line
 

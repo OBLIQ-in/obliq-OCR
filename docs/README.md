@@ -1,9 +1,10 @@
 # docs
 
-This directory is reserved for supplementary documentation and benchmark reports.
+Supplementary documentation for obliq-ocr.
 
-## Planned contents
+- [`architecture.md`](architecture.md) – how each page is routed (text layer, OCR or blank), the output schema, and failure modes
+- [`../BENCHMARK.md`](../BENCHMARK.md) – benchmark report; the `benchmark-*.svg` charts in this folder belong to it
 
-- `BENCHMARK.md` – CER/WER numbers, throughput timings on various hardware
-- `architecture.md` – Design decisions and future roadmap
-- `api_reference.md` – Auto-generated from docstrings (Sphinx / mkdocs)
+## Planned
+
+- `api_reference.md` – generated from docstrings (mkdocs, #50)
