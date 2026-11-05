@@ -2,7 +2,8 @@
 accept = [200, 429]
 exclude = [
     "http://localhost:*",
-    "http://127.0.0.1:*"
+    "http://127.0.0.1:*",
+    "https://github.com/OBLIQ-in/obliq-OCR/settings/secrets/actions"
 ]
 exclude_path = [
     ".git/",
