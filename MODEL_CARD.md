@@ -16,7 +16,7 @@ scripts, or for any decision made without human review.
 ## What runs inside
 
 obliq-ocr has no model of its own. It decides page by page between two
-existing engines (`docs/architecture.md`, added in #70, explains how it
+existing engines (the [architecture doc](https://github.com/OBLIQ-in/obliq-OCR/blob/main/docs/architecture.md) explains how it
 decides):
 
 | Component | Required | Version tested | Role | Licence |
@@ -57,7 +57,7 @@ No real client documents were used for this card.
 | Set | Size | Reference text | Used for |
 |---|---|---|---|
 | Synthetic invoice probe (`tests/scripts/model_card_probe.py`) | 1 made-up A4 tax invoice: 14 lines, 10 key values, scanned under 10 conditions | Yes, exact | OCR accuracy, effect of DPI and rotation |
-| Benchmark set ([Kaggle](https://www.kaggle.com/datasets/rahulkate173/obliq-ocr-benchmarking-dataset), see [BENCHMARK.md](BENCHMARK.md)) | 4 PDFs, 10 pages: 2 scanned PDFs (5 pages), 2 digital PDFs (5 pages) | Only for the digital PDFs (their own text layer) | Speed, memory, comparison with other engines |
+| Benchmark set ([Kaggle](https://www.kaggle.com/datasets/rahulkate173/obliq-ocr-benchmarking-dataset), see [BENCHMARK.md](https://github.com/OBLIQ-in/obliq-OCR/blob/main/BENCHMARK.md)) | 4 PDFs, 10 pages: 2 scanned PDFs (5 pages), 2 digital PDFs (5 pages) | Only for the digital PDFs (their own text layer) | Speed, memory, comparison with other engines |
 | CI fixtures (`tests/scripts/generate_fixtures.py`) | 4 tiny synthetic PDFs: digital, scanned, mixed, rotated | Yes | Regression gate on every PR |
 
 The probe draws the invoice with PyMuPDF's built-in Helvetica, saves it as a
@@ -120,7 +120,7 @@ example the GSTIN checksum, and that line items add up to the total.
 
 ### Speed and memory (benchmark set)
 
-From [BENCHMARK.md](BENCHMARK.md), CPU only. The CPU model, Python version and
+From [BENCHMARK.md](https://github.com/OBLIQ-in/obliq-OCR/blob/main/BENCHMARK.md), CPU only. The CPU model, Python version and
 DPI were not recorded for that run.
 
 | Path | Seconds per page | Pages per second | Peak memory growth |
@@ -137,9 +137,9 @@ characters, since every word matched.
 An earlier run on an 8-page scanned invoice PDF on a Kaggle CPU notebook
 (2 vCPU) took 29 seconds in total, with mean confidence 0.83.
 
-The times on this card were measured with the duplicate page render that
-exists on `main` today: every OCR page is rendered twice. Fixing that will
-make OCR pages a little faster.
+The times on this card were measured before #72 removed a duplicate page
+render, when every OCR page was rendered twice. OCR pages are now a little
+faster than shown here.
 
 ### CI regression gate
 

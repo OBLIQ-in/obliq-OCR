@@ -25,6 +25,7 @@ theme:
 nav:
   - Home: index.md
   - Architecture and output schema: architecture.md
+  - Model card: model-card.md
   - API reference: api.md
   - Maintainers:
       - Release guide: RELEASE_GUIDE.md
