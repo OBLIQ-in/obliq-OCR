@@ -1,45 +1,6 @@
-#!/usr/bin/env python3
 """
 benchmark.py - CPU-only OCR benchmark: obliq-ocr vs EasyOCR, RapidOCR,
 Tesseract, PaddleOCR, docTR and the raw PyMuPDF text layer.
-
-Place at:  tests/scripts/benchmark.py
-Run:       python tests/scripts/benchmark.py
-           python tests/scripts/benchmark.py --iterations 5 --engines obliq easyocr
-           python tests/scripts/benchmark.py --group scanned --dpi 150
-
-Optional dependencies (engines that are not installed are skipped):
-    pip install pymupdf numpy psutil rapidfuzz
-    pip install easyocr rapidocr_onnxruntime pytesseract
-    pip install paddleocr paddlepaddle
-    pip install "python-doctr[torch]"
-    # CPU-only torch (smaller):  pip install torch --index-url https://download.pytorch.org/whl/cpu
-    # Tesseract also needs the system binary (apt install tesseract-ocr / brew install tesseract)
-
-Metrics (15)
-    Speed / resources
-      1.  Cold start (s)            import + model load + first warm-up call
-      2.  Mean latency / doc (s)    end-to-end, PDF in -> text out
-      3.  P95 latency (s)           pooled over all iterations
-      4.  Latency jitter (s)        std-dev across iterations (per doc, averaged)
-      5.  Seconds / page
-      6.  Throughput (pages/s)
-      7.  Peak memory (MB)          RSS growth while processing
-    Quality
-      8.  Mean confidence           engine-reported (scales differ; informational)
-      9.  CER (%)                   character error rate vs reference
-      10. WER (%)                   word error rate vs reference
-      11. Token F1 (%)              bag-of-words F1 vs reference
-      12. Number recall (%)         digits/amounts/dates recovered (key for invoices)
-      13. Consensus agreement (%)   mean token-F1 vs the other OCR engines (no GT needed)
-    Robustness
-      14. Garbage ratio (%)         share of junk / replacement characters
-      15. Run-to-run stability (%)  similarity of output across iterations
-
-Reference text for CER / WER / F1 / number recall, in priority order:
-    1. tests/fixtures/ground_truth/<pdf_stem>.txt   (you provide this)
-    2. the PDF's native text layer (processed PDFs only)
-    3. none -> those four metrics show "n/a"; consensus agreement still works
 """
 
 from __future__ import annotations
@@ -246,7 +207,9 @@ def render_pages(pdf: Path, dpi: int):
     with fitz.open(str(pdf)) as doc:
         for page in doc:
             pix = page.get_pixmap(dpi=dpi, colorspace=fitz.csRGB, alpha=False)
-            yield np.frombuffer(pix.samples, dtype=np.uint8).reshape(pix.height, pix.width, 3).copy()
+            yield (
+                np.frombuffer(pix.samples, dtype=np.uint8).reshape(pix.height, pix.width, 3).copy()
+            )
 
 
 def pdf_text_layer(pdf: Path) -> List[str]:
@@ -281,7 +244,9 @@ def boxes_to_text(items: List[Tuple[float, float, float, float, str]]) -> str:
             lines[-1]["items"].append(it)
         else:
             lines.append({"yc": yc, "h": h, "items": [it]})
-    return "\n".join(" ".join(t[4] for t in sorted(ln["items"], key=lambda t: t[0])) for ln in lines)
+    return "\n".join(
+        " ".join(t[4] for t in sorted(ln["items"], key=lambda t: t[0])) for ln in lines
+    )
 
 
 def poly_to_box(poly) -> Tuple[float, float, float, float]:
@@ -536,8 +501,14 @@ def print_table(title: str, headers: List[str], rows: List[List[str]]):
     print("| " + " | ".join(h.ljust(w) for h, w in zip(headers, widths)) + " |")
     print(sep)
     for r in rows:
-        print("| " + " | ".join(str(c).ljust(w) if i == 0 else str(c).rjust(w)
-                                 for i, (c, w) in enumerate(zip(r, widths))) + " |")
+        print(
+            "| "
+            + " | ".join(
+                str(c).ljust(w) if i == 0 else str(c).rjust(w)
+                for i, (c, w) in enumerate(zip(r, widths))
+            )
+            + " |"
+        )
     print(sep)
 
 
@@ -573,7 +544,9 @@ def summarise(docs: List[Dict[str, Any]], cold: Optional[float]) -> Dict[str, Op
         "cold_start": cold,
         "mean_latency": statistics.mean(statistics.mean(d["times"]) for d in ok),
         "p95_latency": percentile(all_times, 0.95),
-        "jitter": mean_ok([statistics.pstdev(d["times"]) if len(d["times"]) > 1 else 0.0 for d in ok]),
+        "jitter": mean_ok(
+            [statistics.pstdev(d["times"]) if len(d["times"]) > 1 else 0.0 for d in ok]
+        ),
         "sec_per_page": total_time / total_pages if total_pages else None,
         "pages_per_sec": total_pages / total_time if total_time else None,
         "peak_mem": max(mems) if mems else None,
@@ -596,7 +569,11 @@ def print_summary(title: str, per_engine: Dict[str, Dict[str, Any]], n_docs: int
     best: Dict[str, Optional[str]] = {}
     for key, _, _, better in METRICS:
         vals = {n: per_engine[n][key] for n in names if per_engine[n].get(key) is not None}
-        best[key] = (min(vals, key=vals.get) if better == "min" else max(vals, key=vals.get)) if vals and better else None
+        best[key] = (
+            (min(vals, key=vals.get) if better == "min" else max(vals, key=vals.get))
+            if vals and better
+            else None
+        )
 
     rows = []
     for key, label, f, _ in METRICS:
@@ -615,23 +592,34 @@ def print_summary(title: str, per_engine: Dict[str, Dict[str, Any]], n_docs: int
         vals = {n: per_engine[n][key] for n in names if per_engine[n].get(key) is not None}
         for pos, n in enumerate(sorted(vals, key=vals.get, reverse=(better == "max")), 1):
             ranks[n].append(pos)
-    rows.append(["Mean rank (lower = better)"] +
-                [f"{statistics.mean(ranks[n]):.2f}" if ranks[n] else "n/a" for n in names])
+    rows.append(
+        ["Mean rank (lower = better)"]
+        + [f"{statistics.mean(ranks[n]):.2f}" if ranks[n] else "n/a" for n in names]
+    )
     print_table(title + "   (* = best)", ["Metric"] + names, rows)
 
 
 def main():
     ap = argparse.ArgumentParser(description="CPU-only OCR benchmark for obliq-ocr")
-    ap.add_argument("--iterations", type=int, default=DEFAULT_ITERATIONS, help="timed runs per PDF per engine")
-    ap.add_argument("--dpi", type=int, default=DEFAULT_DPI, help="render DPI for image-based engines")
-    ap.add_argument("--engines", nargs="*", choices=[e.key for e in ALL_ENGINES], help="subset of engines")
+    ap.add_argument(
+        "--iterations", type=int, default=DEFAULT_ITERATIONS, help="timed runs per PDF per engine"
+    )
+    ap.add_argument(
+        "--dpi", type=int, default=DEFAULT_DPI, help="render DPI for image-based engines"
+    )
+    ap.add_argument(
+        "--engines", nargs="*", choices=[e.key for e in ALL_ENGINES], help="subset of engines"
+    )
     ap.add_argument("--group", choices=["scanned", "processed", "both"], default="both")
     ap.add_argument("--no-save", action="store_true", help="do not write JSON/CSV results")
     args = ap.parse_args()
 
     print("=" * 78)
     print(" OCR BENCHMARK  |  CPU only")
-    print(f" python {sys.version.split()[0]}  |  cpus: {os.cpu_count()}  |  iterations: {args.iterations}  |  dpi: {args.dpi}")
+    print(
+        f" python {sys.version.split()[0]}  |  cpus: {os.cpu_count()}  | "
+        f"iterations: {args.iterations}  |  dpi: {args.dpi}"
+    )
     print(f" repo: {REPO_ROOT}")
     print("=" * 78)
 
@@ -644,7 +632,9 @@ def main():
             if g in groups and not Path(p).exists():
                 print(f"[warn] missing {g} PDF, skipping: {p}")
     if not any(groups.values()):
-        sys.exit("No PDFs found. Add files to tests/fixtures/ and edit SCANNED_PDFS / PROCESSED_PDFS.")
+        sys.exit(
+            "No PDFs found. Add files to tests/fixtures/ and edit SCANNED_PDFS / PROCESSED_PDFS."
+        )
 
     # ---- engine setup + cold start -----------------------------------------
     tmp = tempfile.TemporaryDirectory()
@@ -672,7 +662,9 @@ def main():
     ocr_engines = [e for e in active if e.is_ocr]
 
     # ---- run ---------------------------------------------------------------
-    all_docs: Dict[str, Dict[str, List[Dict[str, Any]]]] = {g: {e.name: [] for e in active} for g in groups}
+    all_docs: Dict[str, Dict[str, List[Dict[str, Any]]]] = {
+        g: {e.name: [] for e in active} for g in groups
+    }
     iteration_log: List[Dict[str, Any]] = []
 
     for group, pdfs in groups.items():
@@ -685,8 +677,16 @@ def main():
             docs_this_pdf: Dict[str, Dict[str, Any]] = {}
 
             for eng in active:
-                doc: Dict[str, Any] = {"pdf": pdf.name, "engine": eng.name, "times": [], "texts": [],
-                                       "pages": 0, "peak_mem": None, "error": None, "confidence": None}
+                doc: Dict[str, Any] = {
+                    "pdf": pdf.name,
+                    "engine": eng.name,
+                    "times": [],
+                    "texts": [],
+                    "pages": 0,
+                    "peak_mem": None,
+                    "error": None,
+                    "confidence": None,
+                }
                 mems, last_confs = [], []
                 for it in range(1, args.iterations + 1):
                     pages, confs, dt, mem, err = time_run(eng, pdf, args.dpi)
@@ -702,12 +702,25 @@ def main():
                     if mem is not None:
                         mems.append(mem)
                     mean_conf = mean_ok(confs)
-                    iteration_log.append({"group": group, "pdf": pdf.name, "engine": eng.name, "iteration": it,
-                                          "seconds": dt, "pages": len(pages), "chars": len(full),
-                                          "confidence": mean_conf, "peak_mem_mb": mem})
-                    print(f"  {eng.name:<20} iter {it}/{args.iterations}  {dt:8.2f}s  {len(pages):>3} pages  "
-                          f"{dt / max(len(pages), 1):6.2f} s/pg  {len(full):>7,} chars  "
-                          f"conf {fmt(mean_conf, 3):>5}  mem +{fmt(mem, 0):>5} MB")
+                    iteration_log.append(
+                        {
+                            "group": group,
+                            "pdf": pdf.name,
+                            "engine": eng.name,
+                            "iteration": it,
+                            "seconds": dt,
+                            "pages": len(pages),
+                            "chars": len(full),
+                            "confidence": mean_conf,
+                            "peak_mem_mb": mem,
+                        }
+                    )
+                    print(
+                        f"  {eng.name:<20} iter {it}/{args.iterations}  "
+                        f"{dt:8.2f}s  {len(pages):>3} pages  "
+                        f"{dt / max(len(pages), 1):6.2f} s/pg  {len(full):>7,} chars  "
+                        f"conf {fmt(mean_conf, 3):>5}  mem +{fmt(mem, 0):>5} MB"
+                    )
                 if doc["times"]:
                     doc["peak_mem"] = max(mems) if mems else None
                     doc["confidence"] = mean_ok(last_confs)
@@ -722,8 +735,11 @@ def main():
                     else:
                         doc["cer"] = doc["wer"] = doc["f1"] = doc["numrec"] = None
                     doc["stability"] = (
-                        mean_ok([token_f1(doc["texts"][0].split(), t.split()) for t in doc["texts"][1:]])
-                        if len(doc["texts"]) > 1 else None
+                        mean_ok(
+                            [token_f1(doc["texts"][0].split(), t.split()) for t in doc["texts"][1:]]
+                        )
+                        if len(doc["texts"]) > 1
+                        else None
                     )
                 docs_this_pdf[eng.name] = doc
 
@@ -731,16 +747,35 @@ def main():
             peers = {n: t for n, t in texts_by_engine.items() if n in {e.name for e in ocr_engines}}
             for name, doc in docs_this_pdf.items():
                 others = [t.split() for n, t in peers.items() if n != name]
-                doc["consensus"] = (mean_ok([token_f1(o, texts_by_engine[name].split()) for o in others])
-                                    if name in texts_by_engine and others else None)
+                doc["consensus"] = (
+                    mean_ok([token_f1(o, texts_by_engine[name].split()) for o in others])
+                    if name in texts_by_engine and others
+                    else None
+                )
                 doc.pop("texts", None)
                 all_docs[group][name].append(doc)
 
     # ---- per-iteration table ----------------------------------------------
-    rows = [[r["group"], r["pdf"], r["engine"], str(r["iteration"]), f"{r['seconds']:.2f}", str(r["pages"]),
-             f"{r['seconds'] / max(r['pages'], 1):.3f}", f"{r['chars']:,}", fmt(r["confidence"], 3),
-             fmt(r["peak_mem_mb"], 0)] for r in iteration_log]
-    print_table("ALL ITERATIONS", ["group", "pdf", "engine", "iter", "sec", "pages", "s/page", "chars", "conf", "+MB"], rows)
+    rows = [
+        [
+            r["group"],
+            r["pdf"],
+            r["engine"],
+            str(r["iteration"]),
+            f"{r['seconds']:.2f}",
+            str(r["pages"]),
+            f"{r['seconds'] / max(r['pages'], 1):.3f}",
+            f"{r['chars']:,}",
+            fmt(r["confidence"], 3),
+            fmt(r["peak_mem_mb"], 0),
+        ]
+        for r in iteration_log
+    ]
+    print_table(
+        "ALL ITERATIONS",
+        ["group", "pdf", "engine", "iter", "sec", "pages", "s/page", "chars", "conf", "+MB"],
+        rows,
+    )
 
     # ---- summaries ----------------------------------------------------------
     summaries: Dict[str, Dict[str, Dict[str, Any]]] = {}
@@ -749,21 +784,35 @@ def main():
         summaries[group] = {n: summarise(docs, cold.get(n)) for n, docs in all_docs[group].items()}
         print_summary(f"SUMMARY - {group.upper()} ({n_docs} PDF(s))", summaries[group], n_docs)
     if len(groups) > 1:
-        combined = {n: summarise([d for g in groups for d in all_docs[g][n]], cold.get(n)) for n in cold}
+        combined = {
+            n: summarise([d for g in groups for d in all_docs[g][n]], cold.get(n)) for n in cold
+        }
         summaries["overall"] = combined
         print_summary("SUMMARY - OVERALL", combined, sum(len(v) for v in groups.values()))
 
-    print("\nNotes: latency is end-to-end (PDF in -> text out; image engines include rendering). "
-          "Confidence scales differ per engine and are informational only. "
-          "Number of iterations ≥ 2 is needed for jitter and stability.")
+    print(
+        "\nNotes: latency is end-to-end (PDF in -> text out; image engines include rendering). "
+        "Confidence scales differ per engine and are informational only. "
+        "Number of iterations ≥ 2 is needed for jitter and stability."
+    )
 
     # ---- save ---------------------------------------------------------------
     if not args.no_save:
         RESULTS_DIR.mkdir(parents=True, exist_ok=True)
         stamp = datetime.now().strftime("%Y%m%d_%H%M%S")
         jp = RESULTS_DIR / f"benchmark_{stamp}.json"
-        jp.write_text(json.dumps({"iterations": iteration_log, "per_document": all_docs,
-                                  "summary": summaries, "cold_start": cold}, indent=2, default=str))
+        jp.write_text(
+            json.dumps(
+                {
+                    "iterations": iteration_log,
+                    "per_document": all_docs,
+                    "summary": summaries,
+                    "cold_start": cold,
+                },
+                indent=2,
+                default=str,
+            )
+        )
         cp = RESULTS_DIR / f"benchmark_{stamp}_iterations.csv"
         with cp.open("w", newline="", encoding="utf-8") as f:
             w = csv.DictWriter(f, fieldnames=list(iteration_log[0].keys()))
