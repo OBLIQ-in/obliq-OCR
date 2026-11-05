@@ -12,6 +12,10 @@ jobs:
   build:
     name: Build Distribution Packages
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      id-token: write      # Required for OIDC token and attestations
+      attestations: write  # Required for PEP 740 build provenance attestations
     steps:
       - name: Checkout Code
         uses: actions/checkout@v4
@@ -80,6 +84,7 @@ jobs:
     name: Publish to Production PyPI
     needs: test-testpypi
     runs-on: ubuntu-latest
+    environment: pypi   # Ensures the manual review approval gate runs
     steps:
       - name: Download Build Artifacts
         uses: actions/download-artifact@v4
