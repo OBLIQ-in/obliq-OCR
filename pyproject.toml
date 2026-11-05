@@ -6,7 +6,7 @@ build-backend = "hatchling.build"
 # Project metadata
 # ---------------------------------------------------------------------------
 [project]
-name = "obliq-ocr-test-abhiraj"
+name = "obliq-ocr"
 description = "Page-aware OCR and document-parsing pipeline combining PyMuPDF and RapidOCR."
 readme = "README.md"
 license = { text = "MIT" }
