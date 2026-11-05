@@ -16,16 +16,21 @@ categories:
     labels:
       - "packaging"
       - "ci"
+
 version-resolver:
   major:
-    - "breaking-change"
-    - "major"
+    labels:
+      - "breaking-change"
+      - "major"
   minor:
-    - "feature"
-    - "enhancement"
+    labels:
+      - "feature"
+      - "enhancement"
   patch:
-    - "bug"
-    - "fix"
+    labels:
+      - "bug"
+      - "fix"
+
 template: |
   ## Changes
   $CHANGES
