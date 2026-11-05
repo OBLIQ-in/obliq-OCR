@@ -1,0 +1,60 @@
+name: Release Drafter & Changelog Sync
+
+on:
+  push:
+    branches:
+      - main
+  release:
+    types: [published]
+
+permissions:
+  contents: write
+  pull-requests: read
+
+jobs:
+  update_release_draft:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Run Release Drafter
+        uses: release-drafter/release-drafter@v6
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+  update_changelog:
+    if: github.event_name == 'release' && github.event.action == 'published'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Append Release Notes to Changelog
+        run: |
+          # Create a temp file with the new release entry
+          echo "## [${{ github.event.release.tag_name }}] - $(date +%Y-%m-%d)" > new_entry.md
+          echo "" >> new_entry.md
+          echo "${{ github.event.release.body }}" >> new_entry.md
+          echo "" >> new_entry.md
+
+          # Insert the new entry right below the header in CHANGELOG.md (preserving older entries)
+          python3 -c "
+          with open('CHANGELOG.md', 'r') as f:
+              content = f.read()
+
+          # Find where '## [Unreleased]' or the first version header starts, and insert above it
+          marker = '## [Unreleased]'
+          if marker in content:
+              parts = content.split(marker)
+              new_content = parts[0] + marker + '\n\n' + open('new_entry.md').read() + '---\n\n' + parts[1]
+          else:
+              new_content = open('new_entry.md').read() + '\n' + content
+
+          with open('CHANGELOG.md', 'w') as f:
+              f.write(new_content)
+          "
+          rm new_entry.md
+
+      - name: Commit and Push Changelog
+        uses: stefanzweifel/git-auto-commit-action@v5
+        with:
+          commit_message: "docs(changelog): update CHANGELOG.md for v${{ github.event.release.tag_name }}"
+          file_pattern: "CHANGELOG.md"
