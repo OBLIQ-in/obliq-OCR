@@ -1,17 +1,22 @@
-name-template: "v$V"
-tag-template: "v$V"
+name-template: "v$RESOLVED_VERSION"
+tag-template: "v$RESOLVED_VERSION"
+
 categories:
   - title: "💥 Breaking Changes"
     labels:
       - "breaking-change"
       - "major"
+
   - title: "🚢 New Features & Enhancements"
     labels:
       - "feature"
       - "enhancement"
+
   - title: "🦗 Bug Fixes"
     labels:
       - "bug"
+      - "fix"
+
   - title: "📦 Packaging & Release"
     labels:
       - "packaging"
@@ -22,15 +27,22 @@ version-resolver:
     labels:
       - "breaking-change"
       - "major"
+
   minor:
     labels:
       - "feature"
       - "enhancement"
+
   patch:
     labels:
       - "bug"
       - "fix"
+      - "packaging"
+      - "ci"
+
+  default: patch
 
 template: |
   ## Changes
   $CHANGES
+  **Full Changelog**: $COMPARE_URL
