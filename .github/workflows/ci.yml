@@ -8,6 +8,7 @@ on:
       - 'tests/**'
       - 'pyproject.toml'
       - 'Makefile'
+      - 'README.md'  # tests/test_readme.py runs the quickstart
       - '.github/workflows/ci.yml'
   pull_request:
     branches: [ main ]
@@ -16,6 +17,7 @@ on:
       - 'tests/**'
       - 'pyproject.toml'
       - 'Makefile'
+      - 'README.md'  # tests/test_readme.py runs the quickstart
       - '.github/workflows/ci.yml'
 
 concurrency:
