@@ -304,6 +304,38 @@ class TestRotatedPDF:
 
 
 # ---------------------------------------------------------------------------
+# Integration: each PDF page is triaged once and rendered at most once
+# ---------------------------------------------------------------------------
+
+
+class TestSinglePassPerPage:
+    @pytest.mark.parametrize("pdf_fixture", ["digital_pdf", "blank_pdf", "rotated_pdf"])
+    def test_triage_and_render_called_once_per_page(self, pdf_fixture, request, monkeypatch):
+        import obliq_ocr.core as core
+
+        calls = {"triage": 0, "render": 0}
+        real_triage = core.triage_page
+        real_render = core.render_page
+
+        def counting_triage(*args, **kwargs):
+            calls["triage"] += 1
+            return real_triage(*args, **kwargs)
+
+        def counting_render(*args, **kwargs):
+            calls["render"] += 1
+            return real_render(*args, **kwargs)
+
+        monkeypatch.setattr(core, "triage_page", counting_triage)
+        monkeypatch.setattr(core, "render_page", counting_render)
+
+        result = core.extract_document(request.getfixturevalue(pdf_fixture), verbose=False)
+
+        rendered_pages = [p for p in result.pages if p.method != "text_layer"]
+        assert calls["triage"] == len(result.pages)
+        assert calls["render"] == len(rendered_pages)
+
+
+# ---------------------------------------------------------------------------
 # Integration: save_result
 # ---------------------------------------------------------------------------
 
