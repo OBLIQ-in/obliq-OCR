@@ -1,0 +1,31 @@
+name-template: "v$V"
+tag-template: "v$V"
+categories:
+  - title: "💥 Breaking Changes"
+    labels:
+      - "breaking-change"
+      - "major"
+  - title: "🚢 New Features & Enhancements"
+    labels:
+      - "feature"
+      - "enhancement"
+  - title: "🦗 Bug Fixes"
+    labels:
+      - "bug"
+  - title: "📦 Packaging & Release"
+    labels:
+      - "packaging"
+      - "ci"
+version-resolver:
+  major:
+    - "breaking-change"
+    - "major"
+  minor:
+    - "feature"
+    - "enhancement"
+  patch:
+    - "bug"
+    - "fix"
+template: |
+  ## Changes
+  $CHANGES
