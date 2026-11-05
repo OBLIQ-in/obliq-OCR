@@ -48,6 +48,8 @@ jobs:
     name: Publish to TestPyPI
     needs: build
     runs-on: ubuntu-latest
+    permissions:
+      id-token: write
     steps:
       - name: Download Build Artifacts
         uses: actions/download-artifact@v4
@@ -84,6 +86,8 @@ jobs:
     name: Publish to Production PyPI
     needs: test-testpypi
     runs-on: ubuntu-latest
+    permissions:
+      id-token: write
     environment: pypi   # Ensures the manual review approval gate runs
     steps:
       - name: Download Build Artifacts
