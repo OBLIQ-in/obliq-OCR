@@ -43,4 +43,4 @@
    - Manage projects on production PyPI: [PyPI Managed Projects](https://pypi.org/manage/projects/)
 2. Click on the `obliq-ocr` project on each platform.
 3. Go to **Collaborators** (or **Settings** $\rightarrow$ **Collaborators**).
-4. Add the username `abhirajadhikary06` as an Maintainer.
+4. Add the username `abhirajadhikary06` and `CodeWizard0909` as an Maintainer.
