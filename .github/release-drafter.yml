@@ -1,31 +1,48 @@
-name-template: "v$V"
-tag-template: "v$V"
+name-template: "v$RESOLVED_VERSION"
+tag-template: "v$RESOLVED_VERSION"
+
 categories:
   - title: "💥 Breaking Changes"
     labels:
       - "breaking-change"
       - "major"
+
   - title: "🚢 New Features & Enhancements"
     labels:
       - "feature"
       - "enhancement"
+
   - title: "🦗 Bug Fixes"
     labels:
       - "bug"
+      - "fix"
+
   - title: "📦 Packaging & Release"
     labels:
       - "packaging"
       - "ci"
+
 version-resolver:
   major:
-    - "breaking-change"
-    - "major"
+    labels:
+      - "breaking-change"
+      - "major"
+
   minor:
-    - "feature"
-    - "enhancement"
+    labels:
+      - "feature"
+      - "enhancement"
+
   patch:
-    - "bug"
-    - "fix"
+    labels:
+      - "bug"
+      - "fix"
+      - "packaging"
+      - "ci"
+
+  default: patch
+
 template: |
   ## Changes
   $CHANGES
+  **Full Changelog**: $COMPARE_URL
