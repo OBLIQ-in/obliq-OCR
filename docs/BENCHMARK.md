@@ -53,25 +53,25 @@ The benchmark uses a supplied ground-truth text file when present and otherwise 
 
 ## Metric charts
 
-Charts below are vector graphics and are also available as standalone files in [`docs/`](docs/). Exact values are provided in the summary tables.
+Charts below are vector graphics available as standalone files. Exact values are provided in the summary tables.
 
 ### Scanned PDFs — mean processing time per page
 
-![Bar chart comparing mean seconds per page across engines on scanned PDFs](docs/benchmark-scanned-latency.svg)
+![Bar chart comparing mean seconds per page across engines on scanned PDFs](benchmark_validations/benchmark-scanned-latency.svg)
 
 ### Processed PDFs — mean processing time per page
 
-![Bar chart comparing mean seconds per page across engines on processed PDFs](docs/benchmark-processed-latency.svg)
+![Bar chart comparing mean seconds per page across engines on processed PDFs](benchmark_validations/benchmark-processed-latency.svg)
 
 > obliq-ocr uses the native PDF text layer for these inputs; its processing time is not OCR inference time.
 
 ### Overall — peak measured RSS growth
 
-![Bar chart comparing peak measured RSS growth by engine](docs/benchmark-memory.svg)
+![Bar chart comparing peak measured RSS growth by engine](benchmark_validations/benchmark-memory.svg)
 
 ### Processed PDFs — text quality
 
-![Grouped bar chart comparing token F1 and number recall](docs/benchmark-processed-quality.svg)
+![Grouped bar chart comparing token F1 and number recall](benchmark_validations/benchmark-processed-quality.svg)
 
 ## Summary results
 

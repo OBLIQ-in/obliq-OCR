@@ -26,6 +26,7 @@ nav:
   - Home: index.md
   - Architecture and output schema: architecture.md
   - Model card: model-card.md
+  - Benchmark: BENCHMARK.md
   - API reference: api.md
   - Maintainers:
       - Release guide: RELEASE_GUIDE.md
@@ -45,7 +46,7 @@ markdown_extensions:
       permalink: true
   - pymdownx.highlight
   - pymdownx.snippets:
-      base_path: ["."]
+      base_path: [".", "docs"]
       check_paths: true
   - pymdownx.superfences:
       custom_fences:
