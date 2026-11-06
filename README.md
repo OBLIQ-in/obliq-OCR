@@ -162,4 +162,13 @@ Questions and bugs go to [GitHub issues](https://github.com/OBLIQ-in/obliq-OCR/i
 
 ## License
 
-MIT
+obliq-OCR is MIT-licensed. PyMuPDF, used for PDF extraction and rendering, is
+separately dual-licensed under AGPL-3.0 or an Artifex commercial license. We
+keep PyMuPDF and use it under the AGPL-3.0 option for our open-source
+distribution. We will meet the AGPL-3.0 obligations that apply to distribution
+and service use, including offering corresponding source to users interacting
+with a modified program over a network where required by section 13. Closed-
+source use that cannot meet those terms requires an Artifex commercial license.
+
+See [THIRD_PARTY_NOTICES](THIRD_PARTY_NOTICES) for the recorded decision,
+dependency license inventory, and OCR model notices.

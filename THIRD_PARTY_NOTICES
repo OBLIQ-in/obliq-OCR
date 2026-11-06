@@ -1,0 +1,162 @@
+obliq-OCR - Third-Party Notices and License Decision
+====================================================
+
+License decision (2026-11-06)
+-----------------------------
+
+Decision: comply via open source. obliq-OCR remains open source. We keep
+PyMuPDF and use it under its GNU Affero General Public License version 3
+(AGPL-3.0) option; we are not replacing PyMuPDF and are not purchasing a
+commercial license for this open-source distribution.
+
+The obliq-OCR project source is MIT-licensed. That MIT license does not
+relicense PyMuPDF or remove PyMuPDF's separate AGPL-3.0 terms. We will meet the
+AGPL-3.0 obligations applicable to distributing or operating a combined work.
+In particular, AGPL-3.0 section 13 requires offering corresponding source to
+users interacting with a modified program over a network. If a future
+distribution or deployment cannot comply with AGPL-3.0, obtain an appropriate
+Artifex commercial license before use; this project does not authorize
+closed-source use of PyMuPDF under the AGPL option.
+
+This records the project's intended compliance path, not legal advice or a
+legal determination for every possible deployment. Consult qualified counsel
+for a specific distribution or service.
+
+PyMuPDF license terms:
+https://pymupdf.readthedocs.io/en/latest/about.html#license-and-copyright
+AGPL-3.0 text: https://www.gnu.org/licenses/agpl-3.0.html
+Artifex commercial licensing: https://artifex.com/licensing
+
+Direct and optional runtime dependencies
+----------------------------------------
+
+| Dependency | Use | License |
+|---|---|---|
+| PyMuPDF (`pymupdf`) | PDF text extraction and rendering | GNU AGPL-3.0 or Artifex Commercial License |
+| RapidOCR (`rapidocr_onnxruntime`) | OCR engine and bundled PP-OCR model files | Apache-2.0 |
+| ONNX Runtime (`onnxruntime`) | CPU inference | MIT |
+| ONNX Runtime GPU (`onnxruntime-gpu`, optional `gpu` extra) | CUDA inference | MIT |
+| Pillow (`pillow`) | Image loading and processing | MIT-CMU |
+| NumPy (`numpy`) | Numerical and image arrays | BSD-3-Clause, 0BSD, MIT, Zlib, and CC0-1.0 |
+
+OCR model weights
+-----------------
+
+`rapidocr_onnxruntime` 1.4.4 bundles these default ONNX weights:
+
+| Model file | Purpose | License |
+|---|---|---|
+| `ch_PP-OCRv4_det_infer.onnx` | Text detection | Apache-2.0 |
+| `ch_PP-OCRv4_rec_infer.onnx` | Text recognition | Apache-2.0 |
+| `ch_ppocr_mobile_v2.0_cls_infer.onnx` | Text orientation classification | Apache-2.0 |
+
+The PP-OCR model files are from the PaddleOCR model family and distributed in
+ONNX format by RapidAI. The RapidOCR package metadata declares Apache-2.0.
+The model files are provided by that dependency; obliq-OCR does not copy them
+into its own source tree.
+
+Sources:
+- RapidOCR project: https://github.com/RapidAI/RapidOCR
+- RapidOCR Apache-2.0 license: https://github.com/RapidAI/RapidOCR/blob/main/LICENSE
+- RapidOCR model list: https://rapidai.github.io/RapidOCRDocs/main/model_list/
+- PaddleOCR project: https://github.com/PaddlePaddle/PaddleOCR
+- PaddleOCR Apache-2.0 license: https://github.com/PaddlePaddle/PaddleOCR/blob/main/LICENSE
+
+Resolved dependency license inventory
+-------------------------------------
+
+Generated with `pip-licenses --format=markdown --with-urls` in the audit
+environment, including runtime, development, test, and documentation tools.
+The project does not pin all transitive package versions, so this is a dated
+environment snapshot, not a lockfile. The CI license job checks the licenses
+of its resolved dependencies against the reviewed allow-list.
+
+| Name                       | Version               | License                                                          | URL                                                                   |
+|----------------------------|-----------------------|------------------------------------------------------------------|-----------------------------------------------------------------------|
+| Jinja2                     | 3.1.6                 | BSD License                                                      | https://github.com/pallets/jinja/                                     |
+| Markdown                   | 3.11.3                | BSD-3-Clause                                                     | https://Python-Markdown.github.io/                                    |
+| MarkupSafe                 | 3.0.4                 | BSD-3-Clause                                                     | https://github.com/pallets/markupsafe/                                |
+| PyYAML                     | 6.0.3                 | MIT License                                                      | https://pyyaml.org/                                                   |
+| Pygments                   | 2.21.0                | BSD-2-Clause                                                     | https://pygments.org                                                  |
+| RapidFuzz                  | 3.14.6                | MIT                                                              | https://github.com/rapidfuzz/RapidFuzz                                |
+| ast_serialize              | 0.13.1                | MIT                                                              | https://github.com/mypyc/ast_serialize                                |
+| babel                      | 2.18.0                | BSD License                                                      | https://babel.pocoo.org/                                              |
+| backrefs                   | 8.2                   | MIT                                                              | https://github.com/facelessuser/backrefs                              |
+| certifi                    | 2026.10.23            | Mozilla Public License 2.0 (MPL 2.0)                             | https://github.com/certifi/python-certifi                             |
+| cfgv                       | 3.5.0                 | MIT                                                              | https://github.com/asottile/cfgv                                      |
+| charset-normalizer         | 3.5.2                 | MIT                                                              | https://github.com/jawah/charset_normalizer/blob/master/CHANGELOG.md  |
+| click                      | 8.5.0                 | BSD-3-Clause                                                     | https://github.com/pallets/click/                                     |
+| colorama                   | 0.4.6                 | BSD License                                                      | https://github.com/tartley/colorama                                   |
+| coverage                   | 7.17.0                | Apache-2.0                                                       | https://github.com/coveragepy/coveragepy                              |
+| distlib                    | 0.4.4                 | Python Software Foundation License                               | https://github.com/pypa/distlib                                       |
+| filelock                   | 4.2.9                 | MIT                                                              | https://github.com/tox-dev/filelock                                  |
+| flatbuffers                | 25.12.19              | Apache Software License                                          | https://google.github.io/flatbuffers/                                 |
+| ghp-import                 | 2.1.0                 | Apache Software License                                          | https://github.com/c-w/ghp-import                                     |
+| griffelib                  | 2.4.1                 | ISC                                                              | https://mkdocstrings.github.io/griffe                                 |
+| hatch-vcs                  | 0.5.0                 | MIT                                                              | https://github.com/ofek/hatch-vcs                                     |
+| hatchling                  | 1.32.4                | MIT                                                              | https://hatch.pypa.io/latest/                                         |
+| identify                   | 2.6.20                | MIT                                                              | https://github.com/pre-commit/identify                                |
+| idna                       | 3.20                  | BSD-3-Clause                                                     | https://github.com/kjd/idna                                           |
+| iniconfig                  | 2.3.1                 | MIT                                                              | https://github.com/pytest-dev/iniconfig                               |
+| jiwer                      | 4.0.0                 | Apache-2.0                                                       | UNKNOWN                                                               |
+| librt                      | 0.16.0                | MIT                                                              | https://github.com/mypyc/librt                                        |
+| mergedeep                  | 1.3.4                 | MIT License                                                      | https://github.com/clarketm/mergedeep                                 |
+| mkdocs                     | 1.6.1                 | BSD-2-Clause                                                     | https://github.com/mkdocs/mkdocs                                      |
+| mkdocs-autorefs            | 1.4.5                 | ISC                                                              | https://mkdocstrings.github.io/autorefs                               |
+| mkdocs-get-deps            | 0.2.2                 | MIT                                                              | https://github.com/mkdocs/get-deps                                    |
+| mkdocs-material             | 9.8.0                 | MIT                                                              | https://github.com/squidfunk/mkdocs-material                          |
+| mkdocs-material-extensions | 1.3.1                 | MIT                                                              | https://github.com/facelessuser/mkdocs-material-extensions            |
+| mkdocstrings               | 1.0.8                 | ISC                                                              | https://mkdocstrings.github.io                                        |
+| mkdocstrings-python        | 2.0.10                | ISC                                                              | https://mkdocstrings.github.io/python                                 |
+| mypy                       | 2.4.0                 | MIT                                                              | https://www.mypy-lang.org/                                            |
+| mypy_extensions            | 1.1.0                 | MIT                                                              | https://github.com/python/mypy_extensions                             |
+| networkx                   | 3.7                   | BSD-3-Clause                                                     | https://networkx.org/                                                 |
+| nodeenv                    | 1.12.0                | BSD License                                                      | https://github.com/ekalinin/nodeenv                                   |
+| numpy                      | 2.5.4                 | BSD-3-Clause AND 0BSD AND MIT AND Zlib AND CC0-1.0               | https://numpy.org                                                     |
+| obliq-ocr                  | 0.1.dev107+g5d36091b8 | MIT License                                                      | https://github.com/OBLIQ-in/obliq-OCR                                 |
+| onnxruntime                | 1.31.0                | MIT License                                                      | https://onnxruntime.ai                                                |
+| opencv-python              | 5.0.0.93              | Apache Software License                                          | https://github.com/opencv/opencv-python                               |
+| packaging                  | 26.3                  | Apache-2.0 OR BSD-2-Clause                                       | https://github.com/pypa/packaging                                     |
+| paginate                   | 0.5.7                 | MIT License                                                      | https://github.com/Signum/paginate                                    |
+| pathspec                   | 1.1.1                 | Mozilla Public License 2.0 (MPL 2.0)                             | https://python-path-specification.readthedocs.io/en/latest/index.html |
+| pillow                     | 13.0.0                | MIT-CMU                                                          | https://python-pillow.org                                             |
+| platformdirs               | 4.14.5                | MIT                                                              | https://github.com/tox-dev/platformdirs                               |
+| pluggy                     | 1.7.0                 | MIT License                                                      | https://github.com/pytest-dev/pluggy                                  |
+| pre_commit                 | 4.7.0                 | MIT                                                              | https://github.com/pre-commit/pre-commit                              |
+| protobuf                   | 7.36.2                | 3-Clause BSD License                                             | https://developers.google.com/protocol-buffers/                       |
+| psutil                     | 7.2.2                 | BSD-3-Clause                                                     | https://github.com/giampaolo/psutil                                   |
+| pyclipper                  | 1.4.0                 | MIT License                                                      | https://github.com/fonttools/pyclipper                                |
+| pymdown-extensions         | 12.3                  | MIT                                                              | https://github.com/facelessuser/pymdown-extensions                    |
+| pymupdf                    | 2.0                   | Dual Licensed - GNU AFFERO GPL 3.0 or Artifex Commercial License | https://github.com/pymupdf/pymupdf                                    |
+| pymupdf4llm                | 2.0                   | UNKNOWN                                                          | UNKNOWN                                                               |
+| pymupdf_layout              | 2.0                   | UNKNOWN                                                          | UNKNOWN                                                               |
+| pytest                     | 9.1.1                 | MIT                                                              | https://docs.pytest.org/en/latest/                                    |
+| pytest-cov                 | 7.1.0                 | MIT                                                              | https://pytest-cov.readthedocs.io/en/latest/changelog.html            |
+| python-dateutil            | 4.0.0                 | BSD-3-Clause                                                     | https://github.com/dateutil/dateutil                                  |
+| python-discovery           | 1.9.4                 | MIT                                                              | https://github.com/tox-dev/python-discovery                           |
+| pyyaml_env_tag             | 1.1                   | MIT                                                              | https://github.com/waylan/pyyaml-env-tag                              |
+| rapidocr-onnxruntime       | 1.4.4                 | Apache-2.0                                                       | https://github.com/RapidAI/RapidOCR                                   |
+| requests                   | 2.34.2                | Apache Software License                                          | https://github.com/psf/requests                                       |
+| ruff                       | 0.17.2                | MIT                                                              | https://docs.astral.sh/ruff                                           |
+| setuptools-scm             | 10.3.4                | MIT                                                              | https://github.com/pypa/setuptools-scm/                               |
+| shapely                    | 2.2.0                 | BSD-3-Clause                                                     | https://github.com/shapely/shapely                                    |
+| six                        | 1.17.0                | MIT License                                                      | https://github.com/benjaminp/six                                      |
+| tabulate                   | 0.10.0                | MIT                                                              | https://github.com/astanin/python-tabulate                            |
+| tomlkit                    | 0.15.2                | MIT                                                              | https://github.com/python-poetry/tomlkit                              |
+| tqdm                       | 4.70.1                | MPL-2.0 AND MIT                                                  | https://tqdm.github.io                                                |
+| trove-classifiers          | 2026.9.21.13          | Apache Software License                                          | https://github.com/pypa/trove-classifiers                             |
+| typing_extensions          | 4.16.0                | PSF-2.0                                                          | https://github.com/python/typing_extensions                           |
+| tzdata                     | 2026.6                | Apache-2.0                                                       | https://github.com/python/tzdata                                      |
+| urllib3                    | 2.8.0                 | MIT                                                              | https://github.com/urllib3/urllib3/blob/main/CHANGES.rst              |
+| vcs-versioning             | 2.6.0                 | MIT                                                              | https://github.com/pypa/setuptools-scm                                |
+| virtualenv                 | 21.15.5                | MIT                                                              | https://github.com/pypa/virtualenv                                    |
+| watchdog                   | 7.1.0                 | Apache-2.0                                                       | https://github.com/gorakhargosh/watchdog                              |
+
+`pymupdf4llm` and `pymupdf_layout` report `UNKNOWN` because the installed
+PyMuPDF 2.0 distributions are empty compatibility placeholders; CI excludes
+only these two packages from the license allow-list check. `jiwer` also reports
+an unknown project URL in metadata, but its license is Apache-2.0.
+
+The optional `onnxruntime-gpu` package is MIT-licensed; it is not installed in
+the default CPU CI environment and therefore does not appear in the resolved
+inventory above.

@@ -9,6 +9,8 @@ on:
       - 'pyproject.toml'
       - 'Makefile'
       - 'README.md'  # tests/test_readme.py runs the quickstart
+      - 'MODEL_CARD.md'
+      - 'THIRD_PARTY_NOTICES'
       - '.github/workflows/ci.yml'
   pull_request:
     branches: [ main ]
@@ -18,6 +20,8 @@ on:
       - 'pyproject.toml'
       - 'Makefile'
       - 'README.md'  # tests/test_readme.py runs the quickstart
+      - 'MODEL_CARD.md'
+      - 'THIRD_PARTY_NOTICES'
       - '.github/workflows/ci.yml'
 
 concurrency:
@@ -56,6 +60,33 @@ jobs:
 
       - name: Run Mypy Type Check
         run: mypy src/
+
+  license-check:
+    name: Third-Party License Check
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+          cache: 'pip'
+
+      - name: Install Project, Development, Test, and Documentation Dependencies
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install -e .[dev,test]
+          python -m pip install --group docs
+          python -m pip install pip-licenses
+
+      - name: Check Resolved Dependency Licenses
+        run: >-
+          pip-licenses
+          --allow-only "MIT License;MIT;BSD-2-Clause;BSD-3-Clause;BSD License;ISC;Apache-2.0;Python Software Foundation License;Apache Software License;BSD-3-Clause AND 0BSD AND MIT AND Zlib AND CC0-1.0;Apache-2.0 OR BSD-2-Clause;Mozilla Public License 2.0 (MPL 2.0);MIT-CMU;3-Clause BSD License;Dual Licensed - GNU AFFERO GPL 3.0 or Artifex Commercial License;MPL-2.0 AND MIT;PSF-2.0"
+          --ignore-packages pymupdf4llm pymupdf_layout
+          --format plain-vertical
 
   test-matrix:
     name: Test (Python ${{ matrix.python-version }})
@@ -140,4 +171,5 @@ jobs:
           pip install --upgrade pip
           pip install dist/*.whl
           python -c "import obliq_ocr; print('Package imported successfully, version:', obliq_ocr.__version__)"
+          python -c "from pathlib import Path; import obliq_ocr; assert (Path(obliq_ocr.__file__).parent / 'THIRD_PARTY_NOTICES').is_file(), 'THIRD_PARTY_NOTICES missing from wheel'"
           obliq-ocr --help

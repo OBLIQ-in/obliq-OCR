@@ -125,6 +125,12 @@ obliq-ocr = "obliq_ocr.cli:main"
 [tool.hatch.build.targets.wheel]
 packages = ["src/obliq_ocr"]
 
+[tool.hatch.build.targets.wheel.force-include]
+"THIRD_PARTY_NOTICES" = "obliq_ocr/THIRD_PARTY_NOTICES"
+
+[tool.hatch.build.targets.sdist.force-include]
+"THIRD_PARTY_NOTICES" = "THIRD_PARTY_NOTICES"
+
 # ---------------------------------------------------------------------------
 # Pytest configuration
 # ---------------------------------------------------------------------------
