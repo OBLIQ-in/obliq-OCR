@@ -15,6 +15,9 @@ authors = [
     { name = "Rahul Kate", email = "rahulkate173@gmail.com" },
     { name = "Abhiraj Adhikary", email = "abhirajadhikary06@gmail.com" }
     ]
+maintainers = [
+    { name = "OBLIQ Team", email = "naman@obliq.in" }
+]
 keywords = ["ocr", "pdf", "pymupdf", "rapidocr", "document-parsing"]
 classifiers = [
     "Development Status :: 3 - Alpha",
