@@ -1,0 +1,43 @@
+name: Docker CI & Vulnerability Scan
+
+on:
+  push:
+    branches: [ main ]
+    paths:
+      - 'Dockerfile'
+      - '.dockerignore'
+      - 'src/**'
+      - 'pyproject.toml'
+      - '.github/workflows/docker-ci.yml'
+  pull_request:
+    branches: [ main ]
+    paths:
+      - 'Dockerfile'
+      - '.dockerignore'
+      - 'src/**'
+      - 'pyproject.toml'
+      - '.github/workflows/docker-ci.yml'
+
+jobs:
+  container-scan:
+    name: Build & Scan Distroless Container
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Build Local Container Image
+        run: docker build -t obliq-ocr:local .
+
+      - name: Verify Container Execution
+        run: docker run --rm obliq-ocr:local --help
+
+      - name: Run Trivy Security Vulnerability Scan
+        uses: aquasecurity/trivy-action@master
+        with:
+          image-ref: 'obliq-ocr:local'
+          format: 'table'
+          exit-code: '1'
+          ignore-unfixed: true
+          vuln-type: 'os,library'
+          severity: 'CRITICAL,HIGH'
