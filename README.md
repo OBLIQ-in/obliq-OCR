@@ -131,7 +131,7 @@ has the measurements. In short:
 
 - [Architecture and output schema](https://github.com/OBLIQ-in/obliq-OCR/blob/main/docs/architecture.md): how pages are routed, every output field, errors
 - [Model card](https://github.com/OBLIQ-in/obliq-OCR/blob/main/MODEL_CARD.md): models, versions, measured accuracy, limitations
-- [Benchmark](https://github.com/OBLIQ-in/obliq-OCR/blob/main/BENCHMARK.md): speed and memory against other OCR engines
+- [Benchmark](BENCHMARK.md): speed and memory against other OCR engines
 - [Changelog](https://github.com/OBLIQ-in/obliq-OCR/blob/main/CHANGELOG.md)
 - [Release guide](https://github.com/OBLIQ-in/obliq-OCR/blob/main/docs/RELEASE_GUIDE.md), for maintainers
 - [Security policy](https://github.com/OBLIQ-in/obliq-OCR/blob/main/SECURITY.md): how to report a vulnerability privately
