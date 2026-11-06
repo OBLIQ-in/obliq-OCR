@@ -25,7 +25,7 @@ pip install obliq-ocr
 - **Linux and Windows** are tested. macOS should work but isn't tested.
 - Runs on CPU. For an NVIDIA GPU, see [GPU](#gpu).
 
-The first release isn't on PyPI yet. Until it is, install from GitHub:
+If you want to directly use it from GitHub:
 
 ```bash
 pip install "git+https://github.com/OBLIQ-in/obliq-OCR.git"
