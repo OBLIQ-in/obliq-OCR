@@ -11,9 +11,9 @@ description = "Page-aware OCR and document-parsing pipeline combining PyMuPDF an
 readme = "README.md"
 license = { text = "MIT" }
 authors = [
-    { name = "Naman Jha", email = "naman@obliq.in" }
+    { name = "Naman Jha", email = "naman@obliq.in" },
     { name = "Rahul Kate", email = "rahulkate173@gmail.com" },
-    { name = "Abhiraj Adhikary", email = "abhirajadhikary06@gmail.com" },
+    { name = "Abhiraj Adhikary", email = "abhirajadhikary06@gmail.com" }
     ]
 keywords = ["ocr", "pdf", "pymupdf", "rapidocr", "document-parsing"]
 classifiers = [
