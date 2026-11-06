@@ -1,3 +1,0 @@
-Testing release drafter categorization
-Testing release drafter categorization update Thu Nov  5 16:44:53 UTC 2026
-Testing release drafter with dummy file Thu Nov  5 16:49:41 UTC 2026
